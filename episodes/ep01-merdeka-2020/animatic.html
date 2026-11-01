@@ -171,10 +171,11 @@ svg.char .arm{display:none} svg.char[data-arm="up"] .arm{display:inline}
   <div id="bubbles"></div>
 </div></div>
 
+<audio id="snd" src="soundtrack.m4a" preload="auto"></audio>
 <div id="controls">
   <button id="play" aria-label="Main / jeda">▶</button>
   <button id="rew" aria-label="Ulang dari awal">↺</button>
-  <input id="seek" type="range" min="0" max="48" step="0.01" value="0" aria-label="Masa">
+  <input id="seek" type="range" min="0" max="60" step="0.01" value="0" aria-label="Masa">
   <span id="tc">0.0</span>
 </div>
 
@@ -241,31 +242,31 @@ document.getElementById('stickers').innerHTML = STK.map(l=>`<div class="sticker"
 document.querySelectorAll('.sticker svg').forEach(s=>s.classList.add('frozen'));
 
 /* ===== TIMELINE ===== */
-const DUR = 48;
-const SCENES = [['s1',0,3],['s2',3,17],['s3',17,38],['s5',38,45.5],['s6',45.5,48]];
-const B = [ // who, t0, t1, text, x, y, w, opts
- ['uk',3.6,6.4,'<small>UK Official</small>Right. Congratulations. You are officially independent.',300,410,390,{up:1,en:1,tx:'200px'}],
- ['amir',6.6,10,'Eh? Macam tu je? Takde stadium? Takde perarakan?',20,95,420,{tx:'120px'}],
- ['uk',10.1,12.4,'<small>UK Official</small>SOP, mate. Max 20 people. Cheerio!',330,410,360,{up:1,en:1,tx:'180px'}],
- ['amir',12.9,14.6,'Dia LEFT meeting?!',40,135,360,{tx:'110px',loud:1}],
- ['mei',14.7,17,'Typical. Merdeka pun boleh WFH.',40,1040,440,{up:1,tx:'110px'}],
- ['kavi',17.3,20.3,'Bro relax. I dah buat live. 2 juta tengah tengok.',230,640,450,{tx:'330px'}],
- ['mei',26.6,28,'Amir. Kau mute.',150,1080,330,{up:1,tx:'200px'}],
- ['amir',28.1,29.4,'...sejak bila?',200,260,300,{tx:'100px'}],
- ['mei',29.5,31,'Sejak "M" yang pertama.',100,1080,420,{up:1,tx:'250px'}],
- ['amir',31.2,33.2,'MERDEK—',150,240,320,{loud:1,tx:'120px'}],
- ['kavi',33.3,38,'Takpe bro. Muka ni dah jadi sticker WhatsApp. Satu Malaysia guna.',200,950,490,{up:1,tx:'380px'}],
- ['din',38.6,42.2,'1957, satu stadium jerit "Merdeka!" tujuh kali.',90,430,540,{tx:'260px'}],
- ['din',42.4,45.5,'2020... satu negara jerit <span style="color:#E76F51">"BANG, KAU MUTE!"</span>',90,430,540,{tx:'260px',loud:1}],
+const DUR = 60;
+const SCENES = [['s1',0,2.8],['s2',2.8,23.5],['s3',23.5,45.9],['s5',45.9,57.2],['s6',57.2,60]];
+const B = [ // who, t0, t1, text, x, y, w, opts  (timed to voice track)
+ ['uk',3.2,8.1,'<small>UK Official</small>Right. Congratulations. You are officially independent.',300,410,390,{up:1,en:1,tx:'200px',talk:4.6}],
+ ['amir',8.2,13.1,'Eh? Macam tu je? Takde stadium? Takde perarakan?',20,95,420,{tx:'120px',talk:4.65}],
+ ['uk',13.2,17.7,'<small>UK Official</small>SOP, mate. Max 20 people. Cheerio!',330,410,360,{up:1,en:1,tx:'180px',talk:4.25}],
+ ['amir',18.1,19.5,'Dia LEFT meeting?!',40,135,360,{tx:'110px',loud:1,talk:0.8}],
+ ['mei',19.6,23.4,'Typical. Merdeka pun boleh WFH.',40,1040,440,{up:1,tx:'110px',talk:3.45}],
+ ['kavi',23.8,27.9,'Bro relax. I dah buat live. 2 juta tengah tengok.',230,640,450,{tx:'330px',talk:3.9}],
+ ['mei',33.8,36.2,'Amir. Kau mute.',150,1080,330,{up:1,tx:'200px',talk:2.2}],
+ ['amir',36.3,37.4,'...sejak bila?',200,260,300,{tx:'100px',talk:0.75}],
+ ['mei',37.5,39.4,'Sejak "M" yang pertama.',100,1080,420,{up:1,tx:'250px',talk:1.6}],
+ ['amir',39.8,41.2,'MERDEK—',150,240,320,{loud:1,tx:'120px',talk:0.45}],
+ ['kavi',41.2,45.7,'Takpe bro. Muka ni dah jadi sticker WhatsApp. Satu Malaysia guna.',200,950,490,{up:1,tx:'380px',talk:4.15}],
+ ['din',46.4,52.0,'1957, satu stadium jerit "Merdeka!" tujuh kali.',90,430,540,{tx:'260px',talk:5.4}],
+ ['din',52.3,57.2,'2020... satu negara jerit <span style="color:#E76F51">"BANG, KAU MUTE!"</span>',90,430,540,{tx:'260px',loud:1,talk:4.4}],
 ];
 const EXPR = { // [t, eyes, mouth]
- amir:[[0,'normal','closed'],[6.5,'wide','closed'],[12.8,'wide','frown'],[14.6,'normal','flat'],[17,'normal','closed'],[20.3,'normal','shout'],[26.4,'normal','closed'],[26.6,'wide','flat'],[29.5,'closed','flat'],[31,'wide','shout']],
- mei:[[0,'half','flat'],[17,'half','flat'],[21,'half','flat'],[23,'closed','flat'],[24,'half','flat']],
- kavi:[[0,'normal','grin'],[12.6,'wide','grin'],[14,'normal','grin'],[17,'normal','grin'],[33,'normal','grin']],
- din:[[0,'half','flat'],[42.3,'half','flat']],
+ amir:[[0,'normal','closed'],[8.1,'wide','closed'],[18,'wide','frown'],[19.5,'normal','flat'],[23.5,'normal','closed'],[33.4,'normal','closed'],[33.8,'wide','flat'],[37.5,'closed','flat'],[39.6,'wide','shout']],
+ mei:[[0,'half','flat'],[30,'closed','flat'],[31,'half','flat']],
+ kavi:[[0,'normal','grin'],[17.9,'wide','grin'],[19,'normal','grin']],
+ din:[[0,'half','flat']],
 };
-const COMMENTS = [[21.2,'hafiz_kl','semangat bang!!'],[21.9,'meowlin','bang mute'],[22.5,'kucingoren','MUTE WEH'],[23.2,'raju99','takde bunyi pun'],[23.8,'acikdibah','abang unmute la'],[24.4,'zul.ffb','dah 4 kali jerit senyap'],[25.0,'sarahh','lipsync merdeka ke ni'],[25.6,'pakcik_wsap','hantar kat group family'],[27.2,'hafiz_kl','HAHAHAHA']];
-const PUNCH = [20.5,21.28,22.06,22.84,23.62,24.4,25.18]; // 7x Merdeka
+const COMMENTS = [[28.9,'hafiz_kl','semangat bang!!'],[29.5,'meowlin','bang mute'],[30.1,'kucingoren','MUTE WEH'],[30.7,'raju99','takde bunyi pun'],[31.3,'acikdibah','abang unmute la'],[31.9,'zul.ffb','dah 4 kali jerit senyap'],[32.5,'sarahh','lipsync merdeka ke ni'],[33.1,'pakcik_wsap','hantar kat group family'],[34.6,'hafiz_kl','HAHAHAHA']];
+const PUNCH = [28.2,28.95,29.7,30.45,31.2,31.95,32.7]; // 7x Merdeka
 
 /* ===== RENDER (pure function of t, so it can be scrubbed and frame-rendered) ===== */
 const ease = x => 1-Math.pow(1-Math.min(1,Math.max(0,x)),3);
@@ -281,7 +282,7 @@ function render(t){
   for(const [id,a,z] of SCENES){ const on = t>=a && t<z; $(id).style.display = on?'block':'none'; if(on) cur=id; }
   if(t>=DUR) { $('s6').style.display='block'; cur='s6'; }
   // camera shake on "LEFT meeting"
-  const shake = (t>12.9 && t<13.3) ? Math.sin(t*90)*8 : 0;
+  const shake = (t>18.1 && t<18.5) ? Math.sin(t*90)*8 : 0;
   // punch zoom on S3 counter
   $('s2').style.transform = `translateX(${shake}px)`;
 
@@ -296,14 +297,14 @@ function render(t){
     const on = t>=b[1] && t<b[2]; const el=bubEls[i];
     el.style.display = on?'block':'none';
     if(on){ const p=ease((t-b[1])/0.16); el.style.transform=`scale(${0.7+0.3*p})`; el.style.opacity=p;
-      const talkEnd = b[1] + Math.min(b[2]-b[1]-0.2, b[3].replace(/<[^>]+>/g,'').length*0.055+0.2);
+      const talkEnd = b[1] + b[7].talk;
       if(t<talkEnd) speaking.add(b[0]); }
   });
-  $('tUK').style.display = t<12.5 ? 'flex':'none';
+  $('tUK').style.display = t<17.8 ? 'flex':'none';
   $('tUK').classList.toggle('speak', speaking.has('uk'));
   $('tAmir').classList.toggle('speak', speaking.has('amir') && cur==='s2');
   $('tMei').classList.toggle('speak', speaking.has('mei') && cur==='s2');
-  $('toast').style.display = (t>=12.5 && t<14.6)?'block':'none';
+  $('toast').style.display = (t>=17.8 && t<19.6)?'block':'none';
   $('tKavi').style.left = t<12.5 ? '370px' : '370px';
 
   // characters
@@ -318,34 +319,34 @@ function render(t){
   // S3: 7x merdeka
   const isLive = cur==='s3';
   let n = 0; PUNCH.forEach(p=>{ if(t>=p) n++; });
-  const inPunch = t>=20.5 && t<25.96;
+  const inPunch = t>=28.2 && t<33.2;
   const lp = inPunch ? (t - PUNCH[n-1]) : 9;
-  liveAmir.dataset.arm = (inPunch && lp<0.5) || (t>=31) ? 'up' : 'none';
+  liveAmir.dataset.arm = (inPunch && lp<0.5) || (t>=39.6) ? 'up' : 'none';
   if(inPunch){ liveAmir.dataset.mouth = lp<0.5?'shout':'closed'; liveAmir.style.transform=`translateY(${lp<0.5?-18*Math.sin(lp/0.5*Math.PI):0}px)`; }
   const cnt=$('counter');
-  if(isLive && t>=20.5 && t<26.4){ cnt.style.display='block'; cnt.textContent=`MERDEKA! ×${n}`; const cp=ease(lp/0.15); cnt.style.transform=`scale(${1.3-0.3*cp})`; }
+  if(isLive && t>=28.2 && t<33.6){ cnt.style.display='block'; cnt.textContent=`MERDEKA! ×${n}`; const cp=ease(lp/0.15); cnt.style.transform=`scale(${1.3-0.3*cp})`; }
   else cnt.style.display='none';
   // comments
   const vis = COMMENTS.map((c,i)=>t>=c[0]?i:-1).filter(i=>i>=0);
-  cmEls.forEach((el,i)=>{ const k = vis.length-1-vis.indexOf(i); const on = vis.includes(i) && t<31;
+  cmEls.forEach((el,i)=>{ const k = vis.length-1-vis.indexOf(i); const on = vis.includes(i) && t<39.6;
     el.style.display=on?'block':'none'; if(on){ const a=ease((t-COMMENTS[i][0])/0.2); el.style.transform=`translateY(${-k*62 + (1-a)*30}px)`; el.style.opacity = k>4?0:a; } });
   // mic + freeze
-  const micOn = t>=31;
+  const micOn = t>=39.6;
   $('mic').classList.toggle('on', micOn); $('micslash').style.display = micOn?'none':'inline';
-  $('mic').style.transform = (!micOn && t>=21.5 && t<31) ? `scale(${1+0.12*Math.abs(Math.sin(t*6))})` : '';
-  const frozen = t>=31.8;
-  if(t>=31){ liveAmir.dataset.eyes='wide'; liveAmir.dataset.mouth='shout'; }
+  $('mic').style.transform = (!micOn && t>=29 && t<39.6) ? `scale(${1+0.12*Math.abs(Math.sin(t*6))})` : '';
+  const frozen = t>=40.25;
+  if(t>=39.6){ liveAmir.dataset.eyes='wide'; liveAmir.dataset.mouth='shout'; }
   if(frozen) liveAmir.style.transform='translateY(-12px) skewX(-3deg)';
   $('pix').style.display = frozen?'block':'none';
-  $('lag').style.display = (frozen && t<35)?'block':'none';
-  $('viewers').textContent = t<21 ? '2.1J menonton' : t<31 ? (2.1+(t-21)*0.3).toFixed(1)+'J menonton' : '5.4J menonton';
+  $('lag').style.display = (frozen && t<42.6)?'block':'none';
+  $('viewers').textContent = t<29 ? '2.1J menonton' : t<39.6 ? (2.1+(t-29)*0.3).toFixed(1)+'J menonton' : '5.4J menonton';
   // stickers
   const st = [...document.querySelectorAll('.sticker')];
-  st.forEach((s,i)=>{ const t0=35.0+i*0.16; const on=t>=t0 && t<38; s.style.visibility=on?'visible':'hidden'; if(on){ const p=ease((t-t0)/0.15); s.style.transform=`scale(${0.5+0.5*p}) rotate(${(i%2?3:-3)}deg)`; } });
+  st.forEach((s,i)=>{ const t0=42.8+i*0.16; const on=t>=t0 && t<45.9; s.style.visibility=on?'visible':'hidden'; if(on){ const p=ease((t-t0)/0.15); s.style.transform=`scale(${0.5+0.5*p}) rotate(${(i%2?3:-3)}deg)`; } });
   // S5 glass wipe
   $('glass').style.left = (440 + Math.sin(t*5)*14)+'px';
   // S6
-  if(cur==='s6'){ const p=ease((t-45.5)/0.25); document.querySelector('.logo').style.transform=`scale(${0.6+0.4*p})`; }
+  if(cur==='s6'){ const p=ease((t-57.2)/0.25); document.querySelector('.logo').style.transform=`scale(${0.6+0.4*p})`; }
 }
 
 /* ===== PLAYER ===== */
@@ -353,10 +354,12 @@ const stage=$('stage'), wrap=$('wrap');
 function fit(){ if(document.body.classList.contains('render')) return; stage.style.transform=`scale(${wrap.clientWidth/720})`; }
 addEventListener('resize',fit);
 let T=0, playing=false, last=0;
-function tick(now){ if(playing){ T += (now-last)/1000; if(T>=DUR){T=DUR;playing=false;$('play').textContent='▶';} } last=now; render(T); $('seek').value=T; $('tc').textContent=T.toFixed(1); requestAnimationFrame(tick); }
-$('play').onclick=()=>{ if(T>=DUR) T=0; playing=!playing; $('play').textContent=playing?'❚❚':'▶'; };
-$('rew').onclick=()=>{ T=0; playing=true; $('play').textContent='❚❚'; };
-$('seek').oninput=e=>{ T=+e.target.value; };
+const snd=$('snd');
+function tick(now){ if(playing){ T = (!snd.paused && snd.readyState>2) ? snd.currentTime : T+(now-last)/1000; if(T>=DUR){T=DUR;playing=false;snd.pause();$('play').textContent='▶';} } last=now; render(T); $('seek').value=T; $('tc').textContent=T.toFixed(1); requestAnimationFrame(tick); }
+function sync(){ try{ snd.currentTime=T; if(playing) snd.play().catch(()=>{}); else snd.pause(); }catch(e){} }
+$('play').onclick=()=>{ if(T>=DUR) T=0; playing=!playing; $('play').textContent=playing?'❚❚':'▶'; sync(); };
+$('rew').onclick=()=>{ T=0; playing=true; $('play').textContent='❚❚'; sync(); };
+$('seek').oninput=e=>{ T=+e.target.value; sync(); };
 if(new URLSearchParams(location.search).has('render')){ document.body.classList.add('render'); window.renderAt=t=>render(t); render(0); }
 else { fit(); requestAnimationFrame(t=>{last=t;tick(t);}); }
 </script>

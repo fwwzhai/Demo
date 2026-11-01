@@ -36,7 +36,9 @@ Must be recognisable mid-scroll before the account name, and work on mute (all d
 - Backgrounds: Zoom grid 2x2, livestream (big tile + 2 PIPs + comments), mamak counter (TV, menu, teh tarik), title card, end card.
 - Gags: mute/lag freeze, WhatsApp sticker grid, "X has left the meeting" toast.
 - Episodes: `episodes/epNN-slug/` = `EPISODE.md` (12 parts) + `animatic.html` (`?render=1` + `renderAt(t)`) + mp4 (Playwright frames to ffmpeg, 24fps).
-- EP01 Merdeka 2020 (done).
+- Voice: Malay TTS via `tools/tts.py` (edge-tts; patched to use /root/.ccr/ca-bundle.crt). Cast: Amir=ms-MY-Osman +12% +10Hz · Mei=ms-MY-Yasmin -6% -8Hz · Kavi=Osman +20% +30Hz · Pak Din=Osman -12% -22Hz · English=en-GB-Ryan. Trim silence, atempo ~1.1.
+- Sound: synthesized SFX/ambience/music in numpy (`episodes/ep01-merdeka-2020/audio/mix.py`, reuse its helpers). Silence is a joke tool.
+- EP01 Merdeka 2020 (done, voiced, 60 s).
 
 ## Episode deliverable (always all 12)
 1. Three hooks

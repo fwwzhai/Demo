@@ -1,7 +1,9 @@
 # EP01 — KALAU Malaysia Merdeka Tahun 2020?
 
 **Label (on screen the whole time):** FIKSYEN. The real Merdeka was 31 Ogos 1957. Only real fact we use: the 1957 declaration at Stadium Merdeka, where the crowd shouted "Merdeka!" seven times.
-**Length:** 48 s · 9:16 · 5 scenes, 3 backgrounds · **Animatic:** `animatic.html` / `merdeka-2020-animatic.mp4`
+**Length:** 60 s · 9:16 · 5 scenes, 3 backgrounds · **Animatic + voice + SFX:** `merdeka-2020-animatic.mp4` (`animatic.html` plays in sync with `soundtrack.m4a`)
+
+> Timings below are from the silent v1 cut. The voiced v2 cut runs to 60 s; the exact times are the `B` array in `animatic.html` and the `V` list in `audio/mix.py`.
 
 ## 1. Hooks (pick one for 0–2 s)
 1. **"KALAU Malaysia merdeka tahun 2020?"** with a calendar flipping 1957 → 2020. *(used)*
@@ -47,6 +49,19 @@ In this timeline independence comes in 2020, during the SOP era. The handover ha
 **New reusable assets:** Zoom grid/live UI (works for any "online" episode), mamak counter (Pak Din's home base), Amir raised-fist arm, the sticker-grid gag.
 
 ## 10. Sound and music
+**v2 (built):** Malay TTS voices (Microsoft Edge neural voices, free):
+| Character | Voice | Rate / pitch | Treatment |
+|---|---|---|---|
+| Amir | ms-MY Osman | fast, +8 to 16 Hz | slightly anxious |
+| Mei | ms-MY Yasmin | slow, −6 to 8 Hz | flat, deadpan |
+| Kavi | ms-MY Osman | fastest, +30 Hz | hyper |
+| Pak Din | ms-MY Osman | slow, −22 Hz | no EQ (in the room, not on Zoom) |
+| UK Official | en-GB Ryan | normal | laptop-speaker EQ |
+The 7× "MERDEKA!" stays **silent** on purpose; the music hard-cuts at the first shout. "MERDEK—" is cut off mid-word at the freeze.
+SFX/ambience are all synthesized (no licence issues): title pop+whoosh+thud, Zoom join chime, leave blip, boom on "LEFT meeting", keyboard ticks on comments, crickets, unmute click, glitch freeze, 9 sticker pops, mamak murmur + traffic + spoon clinks + teh tarik pour, punchline drum, 3 kompang-style hits on the end card. The kampung lo-fi music loop (104 bpm) is ducked under voices.
+Rebuild: `python3 tools/tts.py <voice> "<text>" out.mp3 <rate> <pitch>` per line in `audio/lines.tsv`, then `python3 audio/mix.py audio soundtrack.m4a`, then `node tools/rec.js $PWD/animatic.html silent.mp4 60` and mux with ffmpeg.
+
+**Original plan (v1):**
 - 0 s: record-scratch, then a whoosh on the year roll. 3 s: Zoom join chime.
 - 12.5 s: "leave meeting" blip plus a short dramatic sting. 12.9 s: vine-boom.
 - 20.5–26 s: crowd-cheer swell that cuts to **dead silence** on each shout (the joke is the missing sound), with keyboard tick SFX as comments land.
