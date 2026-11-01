@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Merdeka on Mute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --yellow:#F5B544; --red:#E76F51; --green:#367C68; --blue:#263B55; --cream:#F4E9D8;
+  --ink:#1E1A2B; --page:#F4E9D8; --pagefg:#1E1A2B;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --page:#14121B; --pagefg:#F4E9D8; } }
+:root[data-theme="dark"]{ --page:#14121B; --pagefg:#F4E9D8; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--page);color:var(--pagefg);font-family:"Baloo 2",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px}
+#wrap{position:relative;width:min(100%, calc((100vh - 110px) * 9 / 16));aspect-ratio:9/16;max-width:432px}
+#stage{position:absolute;left:0;top:0;width:720px;height:1280px;transform-origin:0 0;overflow:hidden;background:var(--blue);color:var(--ink);border-radius:8px}
+body.render{padding:0;background:#000}
+body.render #wrap{width:720px;max-width:none;aspect-ratio:auto;height:1280px}
+body.render #stage{border-radius:0}
+body.render #controls{display:none}
+.scene{position:absolute;inset:0;display:none}
+svg.char{overflow:visible}
+svg.char .eo,svg.char .ew,svg.char .ec,svg.char .eh,svg.char .m{display:none}
+svg.char[data-eyes="normal"] .eo, svg.char[data-eyes="wide"] .ew, svg.char[data-eyes="closed"] .ec, svg.char[data-eyes="half"] .eh{display:inline}
+svg.char[data-mouth="closed"] .m-closed, svg.char[data-mouth="open"] .m-open, svg.char[data-mouth="shout"] .m-shout,
+svg.char[data-mouth="flat"] .m-flat, svg.char[data-mouth="frown"] .m-frown, svg.char[data-mouth="grin"] .m-grin{display:inline}
+svg.char .arm{display:none} svg.char[data-arm="up"] .arm{display:inline}
+.tag{position:absolute;top:22px;left:22px;background:var(--red);color:#fff;font-weight:800;font-size:20px;padding:2px 12px;border:4px solid var(--ink);border-radius:10px;z-index:50;letter-spacing:1px}
+/* title */
+#s1{background:var(--blue)}
+.bigq{position:absolute;left:40px;right:40px;top:300px;text-align:center;color:var(--cream);font-weight:800;font-size:76px;line-height:1.02;text-shadow:5px 5px 0 var(--ink)}
+.bigq b{color:var(--yellow)}
+.year{position:absolute;left:50%;top:640px;width:420px;height:230px;margin-left:-210px;background:var(--cream);border:8px solid var(--ink);border-radius:24px;overflow:hidden;box-shadow:10px 10px 0 var(--ink)}
+.year .roll{position:absolute;left:0;right:0;top:0}
+.year .roll div{height:214px;line-height:214px;text-align:center;font-size:160px;font-weight:800;color:var(--red)}
+.year .strip{position:absolute;top:0;left:0;right:0;height:0}
+.fine{position:absolute;bottom:140px;left:40px;right:40px;text-align:center;color:var(--cream);font-size:26px;opacity:.9}
+/* zoom */
+.zoombg{background:#1B1D24}
+.topbar{position:absolute;left:0;right:0;top:0;height:120px;background:#24262F;color:#E9E9EE;font-size:24px;padding:70px 24px 0 24px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile{position:absolute;width:330px;height:400px;background:#2E3240;border-radius:18px;overflow:hidden;border:5px solid transparent}
+.tile.speak{border-color:#5BD17A}
+.tile .name{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.55);color:#fff;font-size:20px;padding:2px 10px;border-radius:8px;font-weight:600}
+.tile svg.char{position:absolute;left:25px;bottom:0;width:280px;height:303px}
+.tile.bgA{background:#C9B79A}.tile.bgB{background:#9DB5A6}.tile.bgC{background:#C7A9B9}
+.camoff{display:flex;align-items:center;justify-content:center}
+.camoff .av{width:150px;height:150px;border-radius:50%;background:#5A6070;color:#fff;font-size:60px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.toolbar{position:absolute;left:0;right:0;bottom:0;height:150px;background:#24262F;display:flex;justify-content:space-around;align-items:center;padding-bottom:30px}
+.toolbar .btn{width:80px;height:80px;border-radius:50%;background:#3A3D4A;display:flex;align-items:center;justify-content:center}
+.toolbar .btn.leave{background:#D9463B;width:120px;border-radius:40px}
+.toast{position:absolute;left:50%;top:1050px;transform:translateX(-50%);background:#fff;color:#111;font-size:24px;font-weight:600;padding:10px 20px;border-radius:14px;white-space:nowrap;box-shadow:0 6px 0 rgba(0,0,0,.3)}
+/* live */
+.bigtile{position:absolute;left:20px;top:140px;width:680px;height:880px;border-radius:22px;overflow:hidden;background:#C9B79A;border:5px solid #2E3240}
+.bigtile svg.char{position:absolute;left:90px;bottom:-6px;width:500px;height:542px}
+.livebadge{position:absolute;top:18px;left:18px;display:flex;gap:8px;z-index:3}
+.livebadge span{font-size:24px;font-weight:800;padding:2px 12px;border-radius:8px;color:#fff;background:#E5383B}
+.livebadge span+span{background:rgba(0,0,0,.55)}
+.mic{position:absolute;right:18px;top:18px;width:74px;height:74px;border-radius:50%;background:#E5383B;display:flex;align-items:center;justify-content:center;border:4px solid var(--ink);z-index:3}
+.mic.on{background:#2FA35A}
+.pip{position:absolute;width:190px;height:230px;border-radius:16px;overflow:hidden;border:5px solid #2E3240}
+.pip svg.char{position:absolute;left:5px;bottom:-4px;width:170px;height:184px}
+.pip .name{position:absolute;left:6px;bottom:6px;background:rgba(0,0,0,.55);color:#fff;font-size:16px;padding:0 8px;border-radius:6px}
+.comments{position:absolute;left:36px;width:420px;bottom:300px;height:380px;z-index:4}
+.cm{position:absolute;left:0;bottom:0;background:rgba(20,18,27,.72);color:#fff;font-size:24px;padding:6px 14px;border-radius:14px;white-space:nowrap}
+.cm b{color:var(--yellow);margin-right:8px}
+.counter{position:absolute;left:0;right:0;top:1040px;text-align:center;font-size:84px;font-weight:800;color:var(--yellow);text-shadow:5px 5px 0 var(--ink);-webkit-text-stroke:3px var(--ink)}
+.pixel{position:absolute;inset:0;display:none;z-index:2;
+  background-image:linear-gradient(90deg,rgba(201,183,154,.55) 50%,transparent 50%),linear-gradient(rgba(120,110,95,.35) 50%,transparent 50%);
+  background-size:56px 56px}
+.lag{position:absolute;left:50%;top:420px;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;font-size:28px;padding:10px 22px;border-radius:12px;white-space:nowrap;z-index:5;display:none}
+.stickers{position:absolute;left:30px;right:30px;top:170px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;z-index:6}
+.sticker{background:#fff;border:6px solid var(--ink);border-radius:22px;height:250px;position:relative;overflow:hidden}
+.sticker svg.char{position:absolute;left:10px;top:6px;width:180px;height:195px}
+.sticker div{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-weight:800;font-size:26px;color:var(--ink)}
+/* mamak */
+#s5{background:var(--cream)}
+.tilewall{position:absolute;left:0;right:0;top:760px;height:520px;background:
+  repeating-linear-gradient(90deg,transparent 0 58px,rgba(30,26,43,.25) 58px 62px),
+  repeating-linear-gradient(0deg,transparent 0 58px,rgba(30,26,43,.25) 58px 62px),var(--green);border-top:8px solid var(--ink)}
+.menu{position:absolute;right:30px;top:150px;width:280px;background:var(--ink);color:var(--cream);border-radius:14px;padding:14px 16px;font-size:21px;line-height:1.45;border:6px solid #6B4A2B}
+.menu h4{color:var(--yellow);font-size:28px}
+.tv{position:absolute;left:36px;top:150px;width:360px;height:250px;background:#111;border:10px solid var(--ink);border-radius:16px;overflow:hidden}
+.tv .scr{position:absolute;inset:0;background:#C9B79A}
+.tv svg.char{position:absolute;left:80px;top:20px;width:200px;height:217px}
+.tv .pixel{display:block;background-size:22px 22px;opacity:.6}
+.tv .ln{position:absolute;left:0;right:0;bottom:0;background:var(--red);color:#fff;font-size:18px;font-weight:800;padding:2px 10px;z-index:3;white-space:nowrap}
+.counterTop{position:absolute;left:0;right:0;top:980px;height:300px;background:#8A5A35;border-top:10px solid var(--ink)}
+.counterTop::before{content:"";position:absolute;left:0;right:0;top:0;height:34px;background:#A9744A;border-bottom:6px solid var(--ink)}
+#s5 svg.char.din{position:absolute;left:150px;top:560px;width:430px;height:466px}
+.glass{position:absolute;top:900px;width:90px;height:120px}
+/* end */
+#s6{background:var(--yellow);display:none}
+.logo{position:absolute;left:0;right:0;top:470px;text-align:center;font-size:150px;font-weight:800;color:var(--red);-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;line-height:1;text-shadow:8px 8px 0 var(--ink)}
+.tagline{position:absolute;left:0;right:0;top:680px;text-align:center;font-size:40px;font-weight:800;color:var(--blue)}
+.follow{position:absolute;left:50%;top:820px;transform:translateX(-50%);background:var(--blue);color:var(--cream);font-size:30px;font-weight:800;padding:12px 28px;border-radius:999px;border:5px solid var(--ink);white-space:nowrap}
+/* bubbles */
+.bub{position:absolute;background:#fff;color:var(--ink);border:5px solid var(--ink);border-radius:26px;padding:12px 20px;font-size:32px;font-weight:800;line-height:1.12;z-index:20;transform-origin:50% 100%;display:none;box-shadow:6px 6px 0 rgba(30,26,43,.9)}
+.bub small{display:block;font-size:20px;font-weight:600;color:#5a5566;margin-bottom:2px}
+.bub::after{content:"";position:absolute;width:26px;height:26px;background:#fff;border-right:5px solid var(--ink);border-bottom:5px solid var(--ink);bottom:-16px;left:var(--tx,40px);transform:rotate(45deg)}
+.bub.up{transform-origin:50% 0}
+.bub.up::after{top:-16px;bottom:auto;transform:rotate(225deg)}
+.bub.en{background:#E8EEF7}.bub.en::after{background:#E8EEF7}
+.bub.loud{background:var(--yellow);font-size:44px}.bub.loud::after{background:var(--yellow)}
+#controls{display:flex;gap:10px;align-items:center;width:min(100%,432px)}
+#controls button{font:inherit;font-weight:800;min-width:56px;min-height:44px;border-radius:12px;border:3px solid var(--pagefg);background:transparent;color:var(--pagefg);cursor:pointer}
+#controls input{flex:1;accent-color:#E76F51}
+#controls span{font-variant-numeric:tabular-nums;min-width:48px;text-align:right}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <div class="tag">FIKSYEN</div>
+
+  <!-- S1 HOOK -->
+  <div class="scene" id="s1">
+    <div class="bigq" id="q">POV: Majlis Merdeka kau <b>atas Zoom.</b></div>
+    <div class="year"><div class="roll" id="roll"><div>1957</div><div>1983</div><div>1999</div><div>2020</div></div></div>
+    <div class="fine">Sejarah sebenar: Merdeka 31 Ogos 1957.<br>Ini versi alam KALAU LAH!</div>
+  </div>
+
+  <!-- S2 ZOOM HANDOVER -->
+  <div class="scene zoombg" id="s2">
+    <div class="topbar">Penyerahan Kemerdekaan_FINAL_v3 · 31.08.2020</div>
+    <div class="tile bgA" id="tAmir" style="left:20px;top:200px"><div class="name">Amir</div></div>
+    <div class="tile camoff" id="tUK" style="left:370px;top:200px"><div class="av">UK</div><div class="name">UK Official (Guest)</div></div>
+    <div class="tile bgB" id="tMei" style="left:20px;top:620px"><div class="name">Mei</div></div>
+    <div class="tile bgC" id="tKavi" style="left:370px;top:620px"><div class="name">Kavi</div></div>
+    <div class="toast" id="toast">UK Official (Guest) telah meninggalkan mesyuarat</div>
+    <div class="toolbar">
+      <div class="btn"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+      <div class="btn"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><rect x="3" y="7" width="13" height="10" rx="2"/><path d="M16 11l5-3v8l-5-3"/></svg></div>
+      <div class="btn leave"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.75"><path d="M3 14c5-5 13-5 18 0l-3 3-3-2v-3a9 9 0 0 0-6 0v3l-3 2z"/></svg></div>
+    </div>
+  </div>
+
+  <!-- S3/S4 LIVESTREAM (same layout reused) -->
+  <div class="scene zoombg" id="s3">
+    <div class="topbar">KALAU Live · Majlis Merdeka (Online)</div>
+    <div class="bigtile" id="big">
+      <div class="livebadge"><span>LIVE</span><span id="viewers">2.1J menonton</span></div>
+      <div class="mic" id="mic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/><path id="micslash" d="M3 3l18 18"/></svg></div>
+      <div class="pixel" id="pix"></div>
+      <div class="lag" id="lag">Sambungan internet anda tidak stabil</div>
+    </div>
+    <div class="pip bgB" id="pMei" style="right:230px;top:820px;background:#9DB5A6"><div class="name">Mei</div></div>
+    <div class="pip" id="pKavi" style="right:30px;top:820px;background:#C7A9B9"><div class="name">Kavi</div></div>
+    <div class="comments" id="comments"></div>
+    <div class="counter" id="counter"></div>
+    <div class="stickers" id="stickers"></div>
+  </div>
+
+  <!-- S5 MAMAK -->
+  <div class="scene" id="s5">
+    <div class="tv"><div class="scr"></div><div class="pixel"></div><div class="ln">BERITA: NEGARA MERDEKA (ONLINE)</div></div>
+    <div class="menu"><h4>MAMAK PAK DIN</h4>Teh Tarik ....... 2.00<br>Roti Canai ..... 1.50<br>Maggi Goreng .. 6.00<br>WiFi ......... TAKDE</div>
+    <div class="tilewall"></div>
+    <div class="counterTop"></div>
+    <svg class="glass" id="glass" viewBox="0 0 90 120"><path d="M10 8 L80 8 L70 112 L20 112 Z" fill="#E7C49A" stroke="#1E1A2B" stroke-width="6" stroke-linejoin="round"/><path d="M14 40 L76 40 L70 112 L20 112 Z" fill="#B9773F" stroke="#1E1A2B" stroke-width="6" stroke-linejoin="round"/><path d="M14 40 L76 40" stroke="#F4E9D8" stroke-width="8"/></svg>
+  </div>
+
+  <!-- S6 END CARD -->
+  <div class="scene" id="s6">
+    <div class="logo">KALAU<br>LAH!</div>
+    <div class="tagline" style="top:820px">Malaysia, but slightly unhinged.</div>
+    <div class="follow" style="top:920px">Follow. Episod 2 tengah buffering…</div>
+  </div>
+
+  <div id="bubbles"></div>
+</div></div>
+
+<audio id="snd" src="soundtrack-sfx.m4a" preload="auto"></audio>
+<div id="controls">
+  <button id="play" aria-label="Main / jeda">▶</button>
+  <button id="rew" aria-label="Ulang dari awal">↺</button>
+  <input id="seek" type="range" min="0" max="48" step="0.01" value="0" aria-label="Masa">
+  <span id="tc">0.0</span>
+</div>
+
+<script>
+/* ===== CHARACTER LIBRARY (bust rigs, reusable across episodes) ===== */
+const INK = '#1E1A2B', SW = 5;
+const SPEC = {
+  amir:{skin:'#E8B98A', shirt:'#7A8450', shirt2:'#646D3F'},
+  mei: {skin:'#D9A27A', shirt:'#7E9CBF', shirt2:'#F2B48C'},
+  kavi:{skin:'#A8693F', shirt:'#F2D16B', shirt2:'#8EC5E8'},
+  din: {skin:'#9C6239', shirt:'#FBFAF5', shirt2:'#367C68'},
+};
+function eyes(skin){
+  const E = (x)=>`
+   <g class="eo"><ellipse cx="${x}" cy="125" rx="11" ry="13" fill="#fff" stroke="${INK}" stroke-width="4"/><circle cx="${x+1}" cy="127" r="5.5" fill="${INK}"/></g>
+   <g class="ew"><ellipse cx="${x}" cy="123" rx="15" ry="17" fill="#fff" stroke="${INK}" stroke-width="4"/><circle cx="${x}" cy="124" r="4" fill="${INK}"/></g>
+   <g class="ec"><path d="M${x-11} 127 Q${x} 134 ${x+11} 127" fill="none" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/></g>
+   <g class="eh"><ellipse cx="${x}" cy="127" rx="11" ry="10" fill="#fff" stroke="${INK}" stroke-width="4"/><circle cx="${x+1}" cy="130" r="5" fill="${INK}"/><path d="M${x-14} 122 L${x+14} 122 L${x+14} 115 L${x-14} 115Z" fill="${skin}"/><path d="M${x-13} 122 L${x+13} 122" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/></g>`;
+  return E(96)+E(144);
+}
+const MOUTHS = `
+ <g class="m m-closed"><path d="M106 170 Q120 179 134 170" fill="none" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/></g>
+ <g class="m m-open"><path d="M105 166 Q120 192 135 166 Z" fill="#7A2E2E" stroke="${INK}" stroke-width="4.5" stroke-linejoin="round"/></g>
+ <g class="m m-shout"><path d="M97 158 Q120 214 143 158 Q120 150 97 158Z" fill="#7A2E2E" stroke="${INK}" stroke-width="5" stroke-linejoin="round"/><path d="M106 186 Q120 176 134 186" fill="#E76F51"/></g>
+ <g class="m m-flat"><path d="M107 172 L133 172" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/></g>
+ <g class="m m-frown"><path d="M106 177 Q120 164 134 177" fill="none" stroke="${INK}" stroke-width="4.5" stroke-linecap="round"/></g>
+ <g class="m m-grin"><path d="M94 160 Q120 198 146 160 Z" fill="#fff" stroke="${INK}" stroke-width="4.5" stroke-linejoin="round"/><path d="M98 166 L142 166" stroke="${INK}" stroke-width="3"/></g>`;
+function bust(who){
+  const s = SPEC[who];
+  let back='', front='', body='', extra='';
+  // shoulders
+  body = `<path d="M18 262 Q22 205 70 198 L170 198 Q218 205 222 262 Z" fill="${s.shirt}" stroke="${INK}" stroke-width="${SW}" stroke-linejoin="round"/>`;
+  if(who==='amir') body += `<path d="M96 198 L120 232 L144 198 L130 192 L120 210 L110 192Z" fill="${s.shirt2}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/><circle cx="120" cy="245" r="4" fill="${INK}"/>`;
+  if(who==='mei') body += `<path d="M86 199 L120 252 L154 199 Z" fill="${s.shirt2}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/><path d="M64 262 L74 210 M176 262 L166 210" stroke="${INK}" stroke-width="3" opacity=".5"/>`;
+  if(who==='kavi') body += `<path d="M70 200 Q120 240 170 200 Q160 186 120 196 Q80 186 70 200Z" fill="#E3BE4F" stroke="${INK}" stroke-width="4"/><path d="M96 205 L120 230 L144 205Z" fill="${s.shirt2}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/><path d="M106 222 L104 252 M134 222 L136 252" stroke="${INK}" stroke-width="3.5"/>`;
+  if(who==='din') body += `<path d="M70 262 L80 214 L160 214 L170 262Z" fill="${s.shirt2}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/><path d="M80 214 L92 198 M160 214 L148 198" stroke="${s.shirt2}" stroke-width="10"/><path d="M168 199 Q205 200 212 240 L192 246 Q186 214 160 208Z" fill="#F4E9D8" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>`;
+  // hair behind head
+  if(who==='mei') back = `<path d="M52 190 Q34 150 50 104 Q66 46 120 44 Q176 46 190 104 Q206 150 188 190 Q176 182 168 194 Q150 170 150 150 L90 150 Q90 170 72 194 Q64 182 52 190Z" fill="#6B3E1F" stroke="${INK}" stroke-width="${SW}" stroke-linejoin="round"/>`;
+  if(who==='kavi'){ let c=''; [[62,98],[80,66],[110,50],[142,50],[170,68],[184,100],[70,124],[180,128],[95,60],[160,56],[126,42]].forEach(([x,y])=>c+=`<circle cx="${x}" cy="${y}" r="24"/>`); back=`<g fill="#15121C" stroke="${INK}" stroke-width="4">${c}</g>`; }
+  const neck = `<rect x="104" y="172" width="32" height="34" fill="${s.skin}" stroke="${INK}" stroke-width="4"/>`;
+  const head = `<ellipse cx="58" cy="132" rx="11" ry="15" fill="${s.skin}" stroke="${INK}" stroke-width="4"/><ellipse cx="182" cy="132" rx="11" ry="15" fill="${s.skin}" stroke="${INK}" stroke-width="4"/><ellipse cx="120" cy="125" rx="62" ry="68" fill="${s.skin}" stroke="${INK}" stroke-width="${SW}"/>`;
+  const nose = `<path d="M118 136 Q113 152 122 154" fill="none" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>`;
+  if(who==='amir'){
+    front = `<path d="M58 118 Q52 52 120 46 Q188 50 182 116 L172 94 L160 106 L150 80 L136 100 L122 74 L108 98 L92 78 L82 104 L68 90Z" fill="${INK}" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>
+      <g fill="none" stroke="${INK}" stroke-width="4"><circle cx="96" cy="126" r="21"/><circle cx="144" cy="126" r="21"/><path d="M117 124 Q120 120 123 124 M75 122 L60 116 M165 122 L180 116"/></g>`;
+    extra = `<g class="arm"><path d="M196 230 L214 110" stroke="${INK}" stroke-width="40" stroke-linecap="round"/><path d="M196 230 L214 110" stroke="${s.shirt}" stroke-width="28" stroke-linecap="round"/><circle cx="216" cy="92" r="22" fill="${s.skin}" stroke="${INK}" stroke-width="5"/><path d="M204 86 L228 86 M204 96 L228 96" stroke="${INK}" stroke-width="3"/></g>`;
+  }
+  if(who==='mei') front = `<path d="M62 112 Q66 62 120 58 Q172 60 178 108 Q160 84 140 92 Q128 76 112 90 Q90 80 62 112Z" fill="#6B3E1F" stroke="${INK}" stroke-width="4" stroke-linejoin="round"/>`;
+  if(who==='kavi') front = `<g fill="#15121C" stroke="${INK}" stroke-width="4"><circle cx="86" cy="76" r="20"/><circle cx="116" cy="68" r="20"/><circle cx="146" cy="72" r="20"/><circle cx="168" cy="92" r="16"/><circle cx="70" cy="96" r="16"/></g>`;
+  if(who==='din') front = `<path d="M60 116 Q54 56 120 52 Q186 54 180 114 Q170 82 128 80 Q100 78 84 92 Q70 98 60 116Z" fill="${INK}" stroke="${INK}" stroke-width="4"/><path d="M90 104 Q96 98 106 102 M134 102 Q144 98 150 104" stroke="${INK}" stroke-width="6" stroke-linecap="round" fill="none"/>`;
+  const stache = who==='din' ? `<path d="M90 160 Q104 146 120 156 Q136 146 150 160 Q138 168 120 162 Q102 168 90 160Z" fill="${INK}"/>` : '';
+  const brows = who==='din' ? '' : `<path d="M82 100 Q96 94 108 100 M132 100 Q144 94 158 100" stroke="${INK}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`;
+  return `<svg class="char ${who}" data-char="${who}" data-eyes="normal" data-mouth="closed" viewBox="0 0 240 260">${back}${body}${extra}${neck}${head}${eyes(s.skin)}${brows}${nose}${MOUTHS}${stache}${front}</svg>`;
+}
+const put = (sel, who, cls='') => { const el=document.querySelector(sel); el.insertAdjacentHTML('afterbegin', bust(who)); const svg=el.querySelector('svg.char'); if(cls) svg.classList.add(...cls.split(' ')); return svg; };
+put('#tAmir','amir'); put('#tMei','mei'); put('#tKavi','kavi');
+const liveAmir = put('#big','amir','live');
+put('#pMei','mei'); put('#pKavi','kavi');
+document.querySelector('.tv .scr').insertAdjacentHTML('afterend', bust('amir')); const tvAmir=document.querySelector('.tv svg.char'); tvAmir.classList.add('frozen'); tvAmir.dataset.eyes='wide'; tvAmir.dataset.mouth='shout'; tvAmir.dataset.arm='up';
+document.querySelector('#s5 .counterTop').insertAdjacentHTML('beforebegin', bust('din')); document.querySelector('#s5 svg.din').classList.add('din');
+// stickers
+const STK = ['MERDEK—','OTW','Ok boss','Gaji masuk','Bos kata OT','Bila cuti?','Isnin lagi','Hah?','Merdeka (muted)'];
+document.getElementById('stickers').innerHTML = STK.map(l=>`<div class="sticker">${bust('amir').replace('data-eyes="normal" data-mouth="closed"','data-eyes="wide" data-mouth="shout" data-arm="up" data-fixed="1"')}<div>${l}</div></div>`).join('');
+document.querySelectorAll('.sticker svg').forEach(s=>s.classList.add('frozen'));
+
+/* ===== TIMELINE ===== */
+const DUR = 48;
+const SCENES = [['s1',0,3],['s2',3,17],['s3',17,38],['s5',38,45.5],['s6',45.5,48]];
+const B = [ // who, t0, t1, text, x, y, w, opts
+ ['uk',3.6,6.4,'<small>UK Official</small>Right. Congratulations. You are officially independent.',300,410,390,{up:1,en:1,tx:'200px'}],
+ ['amir',6.6,10,'Eh? Macam tu je? Takde stadium? Takde perarakan?',20,95,420,{tx:'120px'}],
+ ['uk',10.1,12.4,'<small>UK Official</small>SOP, mate. Max 20 people. Cheerio!',330,410,360,{up:1,en:1,tx:'180px'}],
+ ['amir',12.9,14.6,'Dia LEFT meeting?!',40,135,360,{tx:'110px',loud:1}],
+ ['mei',14.7,17,'Typical. Merdeka pun boleh WFH.',40,1040,440,{up:1,tx:'110px'}],
+ ['kavi',17.3,20.3,'Bro relax. I dah buat live. 2 juta tengah tengok.',230,640,450,{tx:'330px'}],
+ ['mei',26.6,28,'Amir. Kau mute.',150,1080,330,{up:1,tx:'200px'}],
+ ['amir',28.1,29.4,'...sejak bila?',200,260,300,{tx:'100px'}],
+ ['mei',29.5,31,'Sejak "M" yang pertama.',100,1080,420,{up:1,tx:'250px'}],
+ ['amir',31.2,33.2,'MERDEK—',150,240,320,{loud:1,tx:'120px'}],
+ ['kavi',33.3,38,'Takpe bro. Muka ni dah jadi sticker WhatsApp. Satu Malaysia guna.',200,950,490,{up:1,tx:'380px'}],
+ ['din',38.6,42.2,'1957, satu stadium jerit "Merdeka!" tujuh kali.',90,430,540,{tx:'260px'}],
+ ['din',42.4,45.5,'2020... satu negara jerit <span style="color:#E76F51">"BANG, KAU MUTE!"</span>',90,430,540,{tx:'260px',loud:1}],
+];
+const EXPR = { // [t, eyes, mouth]
+ amir:[[0,'normal','closed'],[6.5,'wide','closed'],[12.8,'wide','frown'],[14.6,'normal','flat'],[17,'normal','closed'],[20.3,'normal','shout'],[26.4,'normal','closed'],[26.6,'wide','flat'],[29.5,'closed','flat'],[31,'wide','shout']],
+ mei:[[0,'half','flat'],[17,'half','flat'],[21,'half','flat'],[23,'closed','flat'],[24,'half','flat']],
+ kavi:[[0,'normal','grin'],[12.6,'wide','grin'],[14,'normal','grin'],[17,'normal','grin'],[33,'normal','grin']],
+ din:[[0,'half','flat'],[42.3,'half','flat']],
+};
+const COMMENTS = [[21.2,'hafiz_kl','semangat bang!!'],[21.9,'meowlin','bang mute'],[22.5,'kucingoren','MUTE WEH'],[23.2,'raju99','takde bunyi pun'],[23.8,'acikdibah','abang unmute la'],[24.4,'zul.ffb','dah 4 kali jerit senyap'],[25.0,'sarahh','lipsync merdeka ke ni'],[25.6,'pakcik_wsap','hantar kat group family'],[27.2,'hafiz_kl','HAHAHAHA']];
+const PUNCH = [20.5,21.28,22.06,22.84,23.62,24.4,25.18]; // 7x Merdeka
+
+/* ===== RENDER (pure function of t, so it can be scrubbed and frame-rendered) ===== */
+const ease = x => 1-Math.pow(1-Math.min(1,Math.max(0,x)),3);
+const $ = id => document.getElementById(id);
+const bubEls = B.map(b=>{ const d=document.createElement('div'); d.className='bub'+(b[7].up?' up':'')+(b[7].en?' en':'')+(b[7].loud?' loud':''); d.innerHTML=b[3]; d.style.left=b[4]+'px'; d.style.top=b[5]+'px'; d.style.width=b[6]+'px'; if(b[7].tx) d.style.setProperty('--tx',b[7].tx); $('bubbles').appendChild(d); return d; });
+const cmEls = COMMENTS.map(c=>{ const d=document.createElement('div'); d.className='cm'; d.innerHTML=`<b>${c[1]}</b>${c[2]}`; $('comments').appendChild(d); return d; });
+const allChars = [...document.querySelectorAll('svg.char')];
+const BLINK = {amir:0, mei:1.3, kavi:2.1, din:0.6};
+function exprAt(who,t){ let e=EXPR[who][0]; for(const k of EXPR[who]) if(k[0]<=t) e=k; return e; }
+
+function render(t){
+  let cur = null;
+  for(const [id,a,z] of SCENES){ const on = t>=a && t<z; $(id).style.display = on?'block':'none'; if(on) cur=id; }
+  if(t>=DUR) { $('s6').style.display='block'; cur='s6'; }
+  // camera shake on "LEFT meeting"
+  const shake = (t>12.9 && t<13.3) ? Math.sin(t*90)*8 : 0;
+  // punch zoom on S3 counter
+  $('s2').style.transform = `translateX(${shake}px)`;
+
+  // S1 hook
+  if(cur==='s1'){
+    const p = ease(t/0.25); $('q').style.transform = `scale(${0.6+0.4*p}) rotate(${(1-p)*-4}deg)`;
+    const r = ease((t-0.4)/1.1); $('roll').style.transform = `translateY(${-214*3*r}px)`;
+  }
+  // S2
+  const speaking = new Set();
+  B.forEach((b,i)=>{
+    const on = t>=b[1] && t<b[2]; const el=bubEls[i];
+    el.style.display = on?'block':'none';
+    if(on){ const p=ease((t-b[1])/0.16); el.style.transform=`scale(${0.7+0.3*p})`; el.style.opacity=p;
+      const talkEnd = b[1] + Math.min(b[2]-b[1]-0.2, b[3].replace(/<[^>]+>/g,'').length*0.055+0.2);
+      if(t<talkEnd) speaking.add(b[0]); }
+  });
+  $('tUK').style.display = t<12.5 ? 'flex':'none';
+  $('tUK').classList.toggle('speak', speaking.has('uk'));
+  $('tAmir').classList.toggle('speak', speaking.has('amir') && cur==='s2');
+  $('tMei').classList.toggle('speak', speaking.has('mei') && cur==='s2');
+  $('toast').style.display = (t>=12.5 && t<14.6)?'block':'none';
+  $('tKavi').style.left = t<12.5 ? '370px' : '370px';
+
+  // characters
+  for(const svg of allChars){
+    if(svg.classList.contains('frozen')) continue;
+    const who = svg.dataset.char;
+    let [, e, m] = exprAt(who,t);
+    if(speaking.has(who) && m!=='shout') m = (Math.floor(t/0.11)%2) ? 'open' : (who==='kavi'?'grin':'closed');
+    if(e!=='closed' && ((t+BLINK[who])%3.4)<0.12) e='closed';
+    svg.dataset.eyes=e; svg.dataset.mouth=m; svg.style.transform='';
+  }
+  // S3: 7x merdeka
+  const isLive = cur==='s3';
+  let n = 0; PUNCH.forEach(p=>{ if(t>=p) n++; });
+  const inPunch = t>=20.5 && t<25.96;
+  const lp = inPunch ? (t - PUNCH[n-1]) : 9;
+  liveAmir.dataset.arm = (inPunch && lp<0.5) || (t>=31) ? 'up' : 'none';
+  if(inPunch){ liveAmir.dataset.mouth = lp<0.5?'shout':'closed'; liveAmir.style.transform=`translateY(${lp<0.5?-18*Math.sin(lp/0.5*Math.PI):0}px)`; }
+  const cnt=$('counter');
+  if(isLive && t>=20.5 && t<26.4){ cnt.style.display='block'; cnt.textContent=`MERDEKA! ×${n}`; const cp=ease(lp/0.15); cnt.style.transform=`scale(${1.3-0.3*cp})`; }
+  else cnt.style.display='none';
+  // comments
+  const vis = COMMENTS.map((c,i)=>t>=c[0]?i:-1).filter(i=>i>=0);
+  cmEls.forEach((el,i)=>{ const k = vis.length-1-vis.indexOf(i); const on = vis.includes(i) && t<31;
+    el.style.display=on?'block':'none'; if(on){ const a=ease((t-COMMENTS[i][0])/0.2); el.style.transform=`translateY(${-k*62 + (1-a)*30}px)`; el.style.opacity = k>4?0:a; } });
+  // mic + freeze
+  const micOn = t>=31;
+  $('mic').classList.toggle('on', micOn); $('micslash').style.display = micOn?'none':'inline';
+  $('mic').style.transform = (!micOn && t>=21.5 && t<31) ? `scale(${1+0.12*Math.abs(Math.sin(t*6))})` : '';
+  const frozen = t>=31.8;
+  if(t>=31){ liveAmir.dataset.eyes='wide'; liveAmir.dataset.mouth='shout'; }
+  if(frozen) liveAmir.style.transform='translateY(-12px) skewX(-3deg)';
+  $('pix').style.display = frozen?'block':'none';
+  $('lag').style.display = (frozen && t<35)?'block':'none';
+  $('viewers').textContent = t<21 ? '2.1J menonton' : t<31 ? (2.1+(t-21)*0.3).toFixed(1)+'J menonton' : '5.4J menonton';
+  // stickers
+  const st = [...document.querySelectorAll('.sticker')];
+  st.forEach((s,i)=>{ const t0=35.0+i*0.16; const on=t>=t0 && t<38; s.style.visibility=on?'visible':'hidden'; if(on){ const p=ease((t-t0)/0.15); s.style.transform=`scale(${0.5+0.5*p}) rotate(${(i%2?3:-3)}deg)`; } });
+  // S5 glass wipe
+  $('glass').style.left = (440 + Math.sin(t*5)*14)+'px';
+  // S6
+  if(cur==='s6'){ const p=ease((t-45.5)/0.25); document.querySelector('.logo').style.transform=`scale(${0.6+0.4*p})`; }
+}
+
+/* ===== PLAYER ===== */
+const stage=$('stage'), wrap=$('wrap');
+function fit(){ if(document.body.classList.contains('render')) return; stage.style.transform=`scale(${wrap.clientWidth/720})`; }
+addEventListener('resize',fit);
+let T=0, playing=false, last=0;
+const snd=$('snd');
+function tick(now){ if(playing){ T = (!snd.paused && snd.readyState>2) ? snd.currentTime : T+(now-last)/1000; if(T>=DUR){T=DUR;playing=false;snd.pause();$('play').textContent='▶';} } last=now; render(T); $('seek').value=T; $('tc').textContent=T.toFixed(1); requestAnimationFrame(tick); }
+function sync(){ try{ snd.currentTime=T; if(playing) snd.play().catch(()=>{}); else snd.pause(); }catch(e){} }
+$('play').onclick=()=>{ if(T>=DUR) T=0; playing=!playing; $('play').textContent=playing?'❚❚':'▶'; sync(); };
+$('rew').onclick=()=>{ T=0; playing=true; $('play').textContent='❚❚'; sync(); };
+$('seek').oninput=e=>{ T=+e.target.value; sync(); };
+if(new URLSearchParams(location.search).has('render')){ document.body.classList.add('render'); window.renderAt=t=>render(t); render(0); }
+else { fit(); requestAnimationFrame(t=>{last=t;tick(t);}); }
+</script>
+</body>
+</html>

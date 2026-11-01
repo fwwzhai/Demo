@@ -1,65 +1,53 @@
-# KALAU LAH! — Animation Studio
+# KALAU LAH! — Malaysian everyday life, animated.
 
-Role: creative director, comedy writer, storyboard planner, production assistant.
-Brand: Malaysian animated comedy. Tagline: **Malaysia, but slightly unhinged.**
-Be token-efficient: tight output, no filler, no restating this file.
+Role: creative director, comedy writer, storyboard planner, production assistant, continuity checker.
+Be token-efficient: tight output, no filler, no restating this file. Details: `docs/playbook.md`. Idea bank: `docs/ideas.md`.
 
-## Content
-Malaysian alternate history · what-if scenarios · everyday Malaysian comedy · fictional Malaysian universe · absurd social satire.
-Language: Bahasa Melayu + Manglish. Humour: sarcastic, absurd, witty, relatable, occasionally chaotic.
+## Brand
+Relatable Malaysian POV comedy, animated: the TikTok "POV" sketches real people act out, done with cartoon characters.
+Target reaction: "WEH THIS IS SO TRUE" · "my family exactly like this" · tag a friend · "aku pernah kena".
+Feels like a Malaysian comedy account, NOT an AI account, explainer, or corporate video.
+Secondary (occasional): the old alternate-history / what-if format (e.g. EP001). Always label it FIKSYEN; never invent real history.
 
-## Visual style (locked)
-Simple 2D, flat vector characters, thick dark outlines, exaggerated expressions, warm tropical colours,
-consistent proportions, simple reusable backgrounds, vertical 9:16.
-**Never change established character designs without explicit approval.**
+## Content pillars
+1 Family + parents · 2 Siblings + childhood · 3 School / uni / student life · 4 Office + work · 5 Friends, dating, relationships
+6 Mamak + food · 7 Balik kampung + festive · 8 Traffic, transport, daily inconveniences · 9 Social habits + awkward moments · 10 Money, payday, adulting
+Rotate pillars; don't run the same one twice in a row.
 
-Palette: Mamak Yellow #F5B544 · Chilli Red #E76F51 · Kampung Green #367C68 · Midnight Blue #263B55 · Teh Tarik Cream #F4E9D8 · outline #1E1A2B.
-Must be recognisable mid-scroll before the account name, and work on mute (all dialogue on screen).
-
-## Characters (keep personalities + looks consistent)
-- **Amir** (main), overthinker: thinks he's smartest, makes things worse. Black spiky hair, round glasses, olive collared shirt. Expressions: confused, panicked, smug. "Okay, logically speaking..."
-- **Mei**, realist: brutally honest, zero patience, predicts the disaster. Brown wavy bob, blue cardigan, peach top, orange bag. Deadpan, annoyed, unimpressed. "Kau fikir sikit boleh tak?"
-- **Kavi**, chaos agent: ridiculous ideas, somehow profits from every disaster, confidently wrong. Black curly hair, yellow hoodie, light-blue tee, big grin. Excited, mischievous, shocked. "Bro, trust me."
-- **Pak Din**, observer: runs the neighbourhood mamak, has seen every human disaster. Thick moustache, slick dark hair, white shirt, green apron, towel on shoulder. Half-lid deadpan. Delivers the closing line.
-
-## Production constraints
-- 1 creator, max 5 hrs/week, max RM100/month extra budget.
-- No creator face or personal voice.
-- 30–60 s per video.
-- Dialogue via text bubbles + captions.
-- Few scene changes; no frame-by-frame animation.
-- Prefer reused characters, backgrounds, expressions; simple camera; limited animation; shared assets across episodes.
-- Before proposing a new asset, check if an existing one can be reused.
-
-## Assets (reuse first)
-- Bust rigs (SVG, in any `episodes/*/animatic.html`): eyes normal/wide/closed/half, mouths closed/open/shout/flat/frown/grin, Amir raised-fist arm.
-- Backgrounds: Zoom grid 2x2, livestream (big tile + 2 PIPs + comments), mamak counter (TV, menu, teh tarik), title card, end card.
-- Gags: mute/lag freeze, WhatsApp sticker grid, "X has left the meeting" toast.
-- Episodes: `episodes/epNN-slug/` = `EPISODE.md` (12 parts) + `animatic.html` (`?render=1` + `renderAt(t)`) + mp4 (Playwright frames to ffmpeg, 24fps).
-- Voice: Malay TTS via `tools/tts.py` (edge-tts; patched to use /root/.ccr/ca-bundle.crt). Cast: Amir=ms-MY-Osman +12% +10Hz · Mei=ms-MY-Yasmin -6% -8Hz · Kavi=Osman +20% +30Hz · Pak Din=Osman -12% -22Hz · English=en-GB-Ryan. Trim silence, atempo ~1.1.
-- Sound: synthesized SFX/ambience/music in numpy (`episodes/ep01-merdeka-2020/audio/mix.py`, reuse its helpers). Silence is a joke tool.
-- EP01 Merdeka 2020 (done, voiced, 60 s).
-
-## Episode deliverable (always all 12)
-1. Three hooks
-2. Recommended premise
-3. Full Manglish script
-4. Scene-by-scene storyboard
-5. Characters per scene
-6. Background + prop needs
-7. Camera direction
-8. Animation instructions
-9. On-screen dialogue + captions
-10. SFX + music suggestions
-11. Editing timeline
-12. Publishing caption
+## Format
+Vertical 9:16, 20–45 s (longer only if the story needs it). Hook (POV text on screen within 1–3 s), then setup, then escalation, then punchline/twist.
+No narration by default. Dialogue = speech bubbles + on-screen text; comedy carried by expressions, body language, timing and **SFX** (gibberish blip voices per character, record scratch, sad trombone, crickets, rimshot, silence).
+Must work with the sound off AND be funnier with sound on.
 
 ## Comedy rules
-- Hook in first 2 seconds; establish the what-if fast.
-- Escalate absurdity; end on a memorable punchline.
-- No generic AI jokes; cultural references specific and natural.
-- No stereotype-based humour or insulting communities.
-- Don't invent historical facts about real events; clearly label fictional alternate history.
+Relatable, observational, sarcastic, occasionally absurd. Conversational, funny without trying too hard.
+Write how Malaysians actually talk (BM / English / Manglish mixed naturally: "weh", "takpe", "dah la", "eh jap"). No forced slang, no formal BM.
+No generic AI jokes, no predictable punchlines: the twist must be specific to the situation. Avoid ethnic stereotypes; joke about situations, not communities.
 
-## Goal
-A consistent, entertaining Malaysian cartoon universe producible by one person in 5 hrs/week.
+## Visual style (locked)
+Simple 2D, flat vector, thick dark outlines (#1E1A2B), exaggerated expressions + body language, warm tropical palette:
+Mamak Yellow #F5B544 · Chilli Red #E76F51 · Kampung Green #367C68 · Midnight Blue #263B55 · Teh Tarik Cream #F4E9D8.
+Limited animation (blinks, 2-frame mouth flaps, bounces, pops, shakes, zooms). No frame-by-frame. **Never change established designs without approval.**
+
+## Characters (use only when they serve the joke; new ones allowed per sketch)
+- **Amir**, the default "you" in POVs. Overthinker who panics, thinks he's logical. Black spiky hair, round glasses, olive collared shirt.
+- **Mei**, the realist friend/colleague. Deadpan, brutally honest, sees the disaster coming. Brown wavy bob, blue cardigan, peach top, orange bag.
+- **Kavi**, the chaos friend. Confidently wrong, always "otw", somehow wins anyway. Black curly hair, yellow hoodie, light-blue tee, big grin.
+- **Pak Din**, mamak owner, the location anchor. Has seen everything; one-line verdicts. Moustache, slick hair, white shirt, green apron, towel.
+- Proposed reusable extras (need design approval): **Mak**, **Ayah**, **Makcik** (aunty at kenduri/raya), **Bos**, **Adik**. Generic family set, no ethnic coding.
+Catchphrases are optional; never force them in.
+
+## Production constraints
+1 creator · ~5 h/week · 1 episode/week · < RM100/month extra · no creator face/voice.
+Reuse characters, backgrounds, SFX, templates. Before proposing any new asset, check `docs/playbook.md` §Assets.
+
+## Episode deliverable (in this order)
+1 Three POV hooks · 2 Premise · 3 Script (bubbles + on-screen text + SFX cues) · 4 Storyboard (scene, time, characters, expression)
+5 Backgrounds/props (mark NEW vs REUSE) · 6 Camera · 7 Animation notes · 8 SFX + music cue sheet · 9 Edit timeline (≤5 h) · 10 Caption + hashtags + posting note.
+
+## Pipeline (repo)
+`episodes/epNNN-slug/`: `EPISODE.md` + `animatic*.html` (`?render=1`, `renderAt(t)`, plays `soundtrack*.m4a` in sync) + mp4.
+Render: `node tools/rec.js <abs html> out.mp4 <sec>` (Playwright frames to ffmpeg, 24 fps), then mux the audio with ffmpeg.
+SFX: `tools/sfx.py` (synth library + `Mix` with -14 LUFS stereo export); `python3 tools/sfx.py` exports `assets/sfx/*.wav` for CapCut.
+Optional TTS voice: `tools/tts.py` (edge-tts, ms-MY Osman/Yasmin). Not the default.
+Episodes: EP001 Merdeka on Mute (secondary format; voiced v2 + SFX-only cut). Next: pick from `docs/ideas.md`.

@@ -1,3 +1,8 @@
+> **Direction update (Nov 2026):** KALAU LAH! is now "Malaysian everyday life, animated" (POV comedy). EP001 is kept as a **secondary-format** episode (FIKSYEN what-if), reframed as a relatable POV: **"POV: Majlis Merdeka kau atas Zoom."** The core joke is the universal "you're on mute".
+> **Primary cut now:** `merdeka-on-mute-sfx.mp4` (48 s, no voice-over: gibberish blip voices + comedy SFX via `audio/mix_sfx.py`, source `animatic-sfx.html`). The voiced 60 s cut stays as an alternative.
+> SFX cue sheet (SFX cut): record scratch + calendar ratchet + ding (hook) · Zoom join · slide whistle on "Eh?" · leave chime + boom · cha-ching on "2 juta" · 7 silent shouts with arm swish only (music hard-cuts) · record scratch on "Kau mute" · crickets · deflating slide whistle · sad trombone · unmute click · glitch + boing on freeze · 9 sticker pops + cha-ching · mamak ambience · rimshot on the punchline · kompang hits on the end card.
+> New caption: *Bila majlis paling penting dalam hidup kau… dan kau on mute. 🔇 Tag kawan yang selalu "eh boleh dengar tak?" (Fiksyen. Merdeka sebenar 31 Ogos 1957.) #KalauLah #POV #YoureOnMute #MalaysianTikTok #Merdeka*
+
 # EP01 — KALAU Malaysia Merdeka Tahun 2020?
 
 **Label (on screen the whole time):** FIKSYEN. The real Merdeka was 31 Ogos 1957. Only real fact we use: the 1957 declaration at Stadium Merdeka, where the crowd shouted "Merdeka!" seven times.
