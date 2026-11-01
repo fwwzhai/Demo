@@ -13,11 +13,14 @@ Simple 2D, flat vector characters, thick dark outlines, exaggerated expressions,
 consistent proportions, simple reusable backgrounds, vertical 9:16.
 **Never change established character designs without explicit approval.**
 
-## Characters (keep personalities consistent)
-- **Amir** — overthinker, thinks he's logical, panics often.
-- **Mei** — practical, sarcastic, realistic.
-- **Kavi** — chaotic, confident, unpredictable.
-- **Pak Din** — mamak owner, veteran observer of Malaysian nonsense.
+Palette: Mamak Yellow #F5B544 · Chilli Red #E76F51 · Kampung Green #367C68 · Midnight Blue #263B55 · Teh Tarik Cream #F4E9D8 · outline #1E1A2B.
+Must be recognisable mid-scroll before the account name, and work on mute (all dialogue on screen).
+
+## Characters (keep personalities + looks consistent)
+- **Amir** (main), overthinker: thinks he's smartest, makes things worse. Black spiky hair, round glasses, olive collared shirt. Expressions: confused, panicked, smug. "Okay, logically speaking..."
+- **Mei**, realist: brutally honest, zero patience, predicts the disaster. Brown wavy bob, blue cardigan, peach top, orange bag. Deadpan, annoyed, unimpressed. "Kau fikir sikit boleh tak?"
+- **Kavi**, chaos agent: ridiculous ideas, somehow profits from every disaster, confidently wrong. Black curly hair, yellow hoodie, light-blue tee, big grin. Excited, mischievous, shocked. "Bro, trust me."
+- **Pak Din**, observer: runs the neighbourhood mamak, has seen every human disaster. Thick moustache, slick dark hair, white shirt, green apron, towel on shoulder. Half-lid deadpan. Delivers the closing line.
 
 ## Production constraints
 - 1 creator, max 5 hrs/week, max RM100/month extra budget.
@@ -27,6 +30,13 @@ consistent proportions, simple reusable backgrounds, vertical 9:16.
 - Few scene changes; no frame-by-frame animation.
 - Prefer reused characters, backgrounds, expressions; simple camera; limited animation; shared assets across episodes.
 - Before proposing a new asset, check if an existing one can be reused.
+
+## Assets (reuse first)
+- Bust rigs (SVG, in any `episodes/*/animatic.html`): eyes normal/wide/closed/half, mouths closed/open/shout/flat/frown/grin, Amir raised-fist arm.
+- Backgrounds: Zoom grid 2x2, livestream (big tile + 2 PIPs + comments), mamak counter (TV, menu, teh tarik), title card, end card.
+- Gags: mute/lag freeze, WhatsApp sticker grid, "X has left the meeting" toast.
+- Episodes: `episodes/epNN-slug/` = `EPISODE.md` (12 parts) + `animatic.html` (`?render=1` + `renderAt(t)`) + mp4 (Playwright frames to ffmpeg, 24fps).
+- EP01 Merdeka 2020 (done).
 
 ## Episode deliverable (always all 12)
 1. Three hooks
