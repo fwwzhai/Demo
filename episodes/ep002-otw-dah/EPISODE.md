@@ -1,5 +1,5 @@
 # EP002: POV: Kawan kau kata "otw dah"
-Pillar 5 (friends) · 37 s · **3D toy style** (Three.js, `animatic.html`, serve over http) · Cast: Amir, Kavi, Pak Din, Cashier (extra) · BG: mamak (3D), Kavi's room, petrol kiosk
+Pillar 5 (friends) · 37 s · **2D anime-cartoon style** (`animatic.html` + `scene2d.js`; serve over http). 3D version kept: `animatic-3d.html` / `otw-dah-3d.mp4` · Cast: Amir, Kavi, Pak Din, Cashier (extra) · BG: mamak (3D), Kavi's room, petrol kiosk
 
 **Hook options:** 1) *(used)* open on the END: Amir covered in cobwebs, melted teh ais, "1 jam 47 minit kemudian…" + 9:47 PM · 2) Phone banner "otw dah bro 🔥" over Kavi still in his towel · 3) "Dia kata 5 minit." with the clock fast-forwarding.
 
