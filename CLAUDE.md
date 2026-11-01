@@ -50,4 +50,5 @@ Reuse characters, backgrounds, SFX, templates. Before proposing any new asset, c
 Render: `node tools/rec.js <abs html> out.mp4 <sec>` (Playwright frames to ffmpeg, 24 fps), then mux the audio with ffmpeg.
 SFX: `tools/sfx.py` (synth library + `Mix` with -14 LUFS stereo export); `python3 tools/sfx.py` exports `assets/sfx/*.wav` for CapCut.
 Optional TTS voice: `tools/tts.py` (edge-tts, ms-MY Osman/Yasmin). Not the default.
-Episodes: EP001 Merdeka on Mute (secondary format; voiced v2 + SFX-only cut). Next: pick from `docs/ideas.md`.
+3D toy style (preferred look since EP002): Three.js r170 vendored at `tools/vendor`, rigs + sets in `episodes/ep002-otw-dah/animatic.html` (reuse: copy and edit). Serve over http for render. SFX sparse: only on key beats.
+Episodes: EP001 Merdeka on Mute (2D, secondary format) · EP002 Otw Dah (3D, 37 s). Next: pick from `docs/ideas.md`.

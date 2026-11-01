@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Otw Dah</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1E1A2B;--yellow:#F5B544;--red:#E76F51;--blue:#263B55;--cream:#F4E9D8;--page:#F4E9D8;--fg:#1E1A2B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page:#14121B;--fg:#F4E9D8}}
+:root[data-theme="dark"]{--page:#14121B;--fg:#F4E9D8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--page);color:var(--fg);font-family:"Baloo 2",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;min-height:100vh}
+#wrap{position:relative;width:min(100%,calc((100vh - 110px)*9/16));max-width:432px;aspect-ratio:9/16}
+#stage{position:absolute;left:0;top:0;width:720px;height:1280px;transform-origin:0 0;overflow:hidden;border-radius:8px;background:#000}
+body.render{padding:0;background:#000} body.render #wrap{width:720px;height:1280px;max-width:none} body.render #controls{display:none} body.render #stage{border-radius:0}
+canvas{position:absolute;inset:0;width:720px!important;height:1280px!important}
+.ov{position:absolute;display:none;z-index:5}
+.pov{left:30px;right:30px;top:90px;text-align:center;font-weight:800;font-size:54px;line-height:1.05;color:#fff;-webkit-text-stroke:10px var(--ink);paint-order:stroke fill}
+.pov b{color:var(--yellow)}
+.cap{left:20px;right:20px;top:560px;text-align:center;font-weight:800;font-size:66px;line-height:1;color:#fff;-webkit-text-stroke:12px var(--ink);paint-order:stroke fill}
+.cap.y{color:var(--yellow)}
+.real{left:30px;top:140px;background:var(--red);color:#fff;font-weight:800;font-size:34px;padding:4px 18px;border:5px solid var(--ink);border-radius:14px;transform:rotate(-3deg)}
+.real span{display:block;font-size:44px;line-height:1.05}
+.clock{right:30px;top:250px;background:var(--ink);color:var(--yellow);font-weight:800;font-size:40px;padding:2px 18px;border-radius:14px;font-variant-numeric:tabular-nums}
+.ban{left:24px;right:24px;top:340px;background:rgba(245,245,247,.97);border-radius:28px;padding:16px 20px;display:flex;gap:16px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.ban .ic{width:64px;height:64px;border-radius:16px;background:#2FBF5B;flex:none;display:flex;align-items:center;justify-content:center}
+.ban .tx{font-family:system-ui,sans-serif;color:#111;font-size:26px;line-height:1.2}
+.ban .tx b{display:block;font-size:24px}
+.ban .tx small{color:#777;font-size:20px;float:right;font-weight:400}
+.bub{background:#fff;color:var(--ink);border:5px solid var(--ink);border-radius:26px;padding:10px 20px;font-size:36px;font-weight:800;line-height:1.1;box-shadow:6px 6px 0 var(--ink);transform-origin:50% 100%}
+.bub::after{content:"";position:absolute;width:26px;height:26px;background:#fff;border-right:5px solid var(--ink);border-bottom:5px solid var(--ink);bottom:-16px;left:var(--tx,60px);transform:rotate(45deg)}
+.end{inset:0;background:var(--yellow);z-index:9}
+.end .logo{position:absolute;left:0;right:0;top:420px;text-align:center;font-size:150px;font-weight:800;line-height:1;color:var(--red);-webkit-text-stroke:8px var(--ink);paint-order:stroke fill;text-shadow:8px 8px 0 var(--ink)}
+.end .tag{position:absolute;left:0;right:0;top:780px;text-align:center;font-size:42px;font-weight:800;color:var(--blue)}
+.end .cta{position:absolute;left:50%;top:880px;transform:translateX(-50%);white-space:nowrap;background:var(--blue);color:var(--cream);font-size:32px;font-weight:800;padding:12px 30px;border-radius:999px;border:5px solid var(--ink)}
+#controls{display:flex;gap:10px;align-items:center;width:min(100%,432px)}
+#controls button{font:inherit;font-weight:800;min-width:56px;min-height:44px;border-radius:12px;border:3px solid var(--fg);background:transparent;color:var(--fg)}
+#controls input{flex:1;accent-color:#E76F51}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <div class="ov pov" id="pov">POV: Kawan kau kata <b>"otw dah"</b></div>
+  <div class="ov cap" id="cap"></div>
+  <div class="ov clock" id="clock"></div>
+  <div class="ov real" id="real">REALITI:<span id="realtx"></span></div>
+  <div class="ov ban" id="ban"><div class="ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12z"/></svg></div><div class="tx"><b>Kavi <small>sekarang</small></b><span id="bantx"></span></div></div>
+  <div class="ov bub" id="bub"></div>
+  <div class="ov end" id="end"><div class="logo">KALAU<br>LAH!</div><div class="tag">Malaysian everyday life, animated.</div><div class="cta">Tag kawan "otw" kau</div></div>
+</div></div>
+<audio id="snd" src="soundtrack.m4a" preload="auto"></audio>
+<div id="controls"><button id="play">▶</button><button id="rew">↺</button><input id="seek" type="range" min="0" max="37" step="0.01" value="0"></div>
+
+<script type="importmap">{"imports":{"three":"../../tools/vendor/three.module.min.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const DUR = 37;
+const stage = document.getElementById('stage');
+const R = new THREE.WebGLRenderer({antialias:true, preserveDrawingBuffer:true});
+R.setPixelRatio(1); R.setSize(720,1280); R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap;
+R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
+stage.prepend(R.domElement);
+const cam = new THREE.PerspectiveCamera(38, 720/1280, .1, 100);
+const M = (c,o={}) => new THREE.MeshStandardMaterial({color:c, roughness:o.r??.55, metalness:0, transparent:o.op!=null, opacity:o.op??1});
+function mesh(geo, mat, x=0,y=0,z=0, p){ const m=new THREE.Mesh(geo,mat); m.position.set(x,y,z); m.castShadow=m.receiveShadow=true; if(p) p.add(m); return m; }
+const box=(w,h,d,r)=>new THREE.BoxGeometry(w,h,d), cyl=(a,b,h,s=32)=>new THREE.CylinderGeometry(a,b,h,s), sph=(r,s=32)=>new THREE.SphereGeometry(r,s,s/2), cap=(r,l)=>new THREE.CapsuleGeometry(r,l,8,16);
+
+/* ---------- TOY CHARACTER RIG ---------- */
+function person(o){
+  const g=new THREE.Group(), s=M(o.skin), sh=M(o.shirt), pa=M(o.pants), ink=M('#1E1A2B',{r:.4});
+  const hips=new THREE.Group(); hips.position.y=.95; g.add(hips);
+  const torso=mesh(cap(.34,.42), sh, 0,.42,0, hips); torso.scale.set(1,1,.8);
+  if(o.towel){ torso.material=s; mesh(cyl(.37,.42,.42), M('#FFFFFF',{r:.9}), 0,.02,0, hips); }
+  if(o.apron) mesh(box(.5,.62,.05), M('#367C68'), 0,.34,.28, hips);
+  if(o.hood){ mesh(new THREE.TorusGeometry(.26,.09,12,24), sh, 0,.82,-.06, hips).rotation.x=Math.PI/2.4; mesh(box(.22,.5,.02), M('#8EC5E8'), 0,.42,.275, hips); }
+  if(o.collar){ const c=mesh(cyl(.2,.26,.08), M(o.collar), 0,.8,0, hips); }
+  if(o.shoulderTowel) mesh(box(.2,.06,.5), M('#F4E9D8',{r:.9}), .26,.84,0, hips).rotation.z=-.3;
+  const head=new THREE.Group(); head.position.y=1.32; hips.add(head);
+  mesh(sph(.5), s, 0,0,0, head).scale.set(1,.96,.95);
+  mesh(sph(.11), s, -.5,-.02,0, head); mesh(sph(.11), s, .5,-.02,0, head);
+  const eyeL=mesh(sph(.065,16), ink, -.17,.04,.45, head), eyeR=mesh(sph(.065,16), ink, .17,.04,.45, head);
+  [eyeL,eyeR].forEach(e=>e.scale.set(1,1.35,.6));
+  const mouthO=mesh(sph(.08,16), M('#5A1E1E'), 0,-.2,.46, head); mouthO.scale.set(1.3,.9,.5);
+  const mouthC=mesh(new THREE.TorusGeometry(.09,.022,8,16,Math.PI), ink, 0,-.16,.47, head); mouthC.rotation.z=Math.PI;
+  const browL=mesh(box(.16,.035,.03), ink, -.17,.2,.47, head), browR=mesh(box(.16,.035,.03), ink, .17,.2,.47, head);
+  if(o.hair==='amir'){ const h=mesh(sph(.53,32), ink, 0,.1,-.03, head); h.scale.set(1,.72,1);
+    for(let i=0;i<7;i++){ const c=mesh(new THREE.ConeGeometry(.1,.26,8), ink, -.36+i*.12,.42-Math.abs(i-3)*.03,.18+(i%2)*.06, head); c.rotation.set(.5,0,(i-3)*.18); }
+    const gm=M('#1E1A2B',{r:.3}); [-.17,.17].forEach(x=>mesh(new THREE.TorusGeometry(.12,.02,8,24), gm, x,.04,.48, head)); mesh(box(.1,.02,.02), gm, 0,.06,.5, head); }
+  if(o.hair==='kavi'){ const hm=M('#15121C',{r:.7}); [[0,.38,0],[-.3,.3,.05],[.3,.3,.05],[-.18,.4,.25],[.18,.4,.25],[0,.42,.3],[-.4,.12,0],[.4,.12,0],[0,.3,-.3],[-.3,.2,-.25],[.3,.2,-.25]].forEach(([x,y,z])=>mesh(sph(.2,16), hm, x,y,z, head)); }
+  if(o.hair==='din'){ const h=mesh(sph(.52,32), ink, 0,.12,-.04, head); h.scale.set(1,.62,1); const m=mesh(cap(.05,.22), ink, 0,-.1,.48, head); m.rotation.z=Math.PI/2; m.scale.set(1.2,1,.7); }
+  if(o.hair==='npc'){ const h=mesh(sph(.52,32), M('#3B2A20'), 0,.14,-.04, head); h.scale.set(1,.6,1); }
+  const limb=(x,y,mat,len,isLeg)=>{ const p=new THREE.Group(); p.position.set(x,y,0); hips.add(p); mesh(cap(isLeg?.15:.11,len), mat, 0,-len/2-.05,0, p);
+    if(isLeg) mesh(box(.24,.14,.36), M(o.shoe||'#F4F4F4'), 0,-len-.2,.06, p); else mesh(sph(.12,16), s, 0,-len-.12,0, p); return p; };
+  const armL=limb(-.44,.72,o.towel?s:sh,.42), armR=limb(.44,.72,o.towel?s:sh,.42);
+  const legL=limb(-.17,0,o.towel?s:pa,.52,1), legR=limb(.17,0,o.towel?s:pa,.52,1);
+  g.userData={hips,head,eyeL,eyeR,mouthO,mouthC,browL,browR,armL,armR,legL,legR,torso};
+  g.traverse(m=>{ if(m.isMesh) m.castShadow=true; });
+  return g;
+}
+function pose(p,o){ const u=p.userData;
+  u.armL.rotation.set(o.aLx||0,0,o.aLz??-.12); u.armR.rotation.set(o.aRx||0,0,o.aRz??.12);
+  u.legL.rotation.set(o.lL||0,0,0); u.legR.rotation.set(o.lR||0,0,0);
+  u.hips.position.y = o.sit? .62 : .95; u.hips.rotation.set(o.lean||0, o.turn||0, o.sway||0);
+  u.head.rotation.set(o.hx||0,o.hy||0,o.hz||0);
+  const bl = o.blink?.12:1, half=o.eyes==='half';
+  [u.eyeL,u.eyeR].forEach(e=>{ e.scale.y = (half?.55:o.eyes==='wide'?1.7:1.35)*bl; });
+  u.browL.position.y=u.browR.position.y = half?.12:o.eyes==='wide'?.27:.2;
+  u.browL.rotation.z = o.brow==='sad'?-.3:o.brow==='mad'?.3:0; u.browR.rotation.z=-u.browL.rotation.z;
+  u.mouthO.visible = !!o.open; u.mouthC.visible=!o.open;
+  u.mouthC.rotation.z = o.frown?0:Math.PI; u.mouthC.position.y = o.frown?-.24:-.16;
+  if(o.open) u.mouthO.scale.set(1.3,o.open,.5);
+}
+
+/* ---------- SETS ---------- */
+const scene=new THREE.Scene(); scene.background=new THREE.Color('#F4E9D8');
+scene.add(new THREE.HemisphereLight('#FFF4E0','#6B5A48',1.1));
+const sun=new THREE.DirectionalLight('#FFE7C2',2.2); sun.position.set(4,9,6); sun.castShadow=true; sun.shadow.mapSize.set(1024,1024);
+Object.assign(sun.shadow.camera,{left:-8,right:8,top:8,bottom:-8}); sun.shadow.bias=-.0005; scene.add(sun);
+const sets={};
+// MAMAK at origin
+{ const S=new THREE.Group(); sets.mamak=S; scene.add(S);
+  const fl=mesh(new THREE.PlaneGeometry(30,30), M('#C9C2B4',{r:.9}), 0,0,0, S); fl.rotation.x=-Math.PI/2;
+  for(let i=-6;i<=6;i++) for(let j=-6;j<=6;j++) if((i+j)%2===0){ const t=mesh(new THREE.PlaneGeometry(1,1), M('#B5AC9C',{r:.9}), i,.002,j, S); t.rotation.x=-Math.PI/2; t.castShadow=false; }
+  mesh(box(16,6,.3), M('#F4E9D8'), 0,3,4.5, S); mesh(box(16,1.6,.32), M('#367C68'), 0,.8,4.48, S);
+  mesh(box(.3,6,12), M('#EFE2CC'), -5,3,0, S); mesh(box(.3,6,12), M('#EFE2CC'), 6,3,0, S);
+  const menu=mesh(box(2.6,1.5,.08), M('#1E1A2B'), -3.2,2.7,4.32, S);
+  const cv=document.createElement('canvas'); cv.width=512; cv.height=300; const c=cv.getContext('2d'); c.fillStyle='#1E1A2B'; c.fillRect(0,0,512,300); c.fillStyle='#F5B544'; c.font='bold 56px sans-serif'; c.fillText('MAMAK PAK DIN',28,70); c.fillStyle='#F4E9D8'; c.font='38px sans-serif'; ['Roti Canai    1.50','Teh Ais          2.50','Nasi Kandar   ??'].forEach((l,i)=>c.fillText(l,40,140+i*55));
+  const tex=new THREE.CanvasTexture(cv); tex.colorSpace=THREE.SRGBColorSpace; mesh(new THREE.PlaneGeometry(2.5,1.4), new THREE.MeshBasicMaterial({map:tex}), -3.2,2.7,4.27, S).rotation.y=Math.PI;
+  for(let i=0;i<3;i++){ const f=mesh(box(1.6,.06,.12), new THREE.MeshBasicMaterial({color:'#FFFFFF'}), -2+i*2.4,5.2,2, S); }
+  // table + stools
+  mesh(cyl(.9,.9,.06), M('#F2F2EE',{r:.3}), 0,1.05,0, S); mesh(cyl(.08,.08,1), M('#9AA0A6',{r:.3}), 0,.52,0, S); mesh(cyl(.4,.4,.04), M('#9AA0A6'), 0,.02,0, S);
+  const stool=(x,z)=>{ mesh(cyl(.28,.32,.06), M('#E5383B',{r:.4}), x,.6,z, S); mesh(cyl(.3,.38,.58,24,1), M('#C92F33',{r:.4}), x,.3,z, S); };
+  stool(0,.95); stool(-.9,-.3); stool(.95,-.2);
+  // counter behind
+  mesh(box(3.2,1.1,.8), M('#8A5A35'), 2.8,.55,3.4, S); mesh(box(3.3,.08,.9), M('#C9C9C9',{r:.3}), 2.8,1.12,3.4, S);
+}
+// KAVI ROOM at x=40
+{ const S=new THREE.Group(); S.position.x=40; sets.room=S; scene.add(S);
+  const fl=mesh(new THREE.PlaneGeometry(20,20), M('#B98B5E',{r:.8}), 0,0,0, S); fl.rotation.x=-Math.PI/2;
+  mesh(box(14,6,.3), M('#9DB5A6'), 0,3,-3.5, S); mesh(box(.3,6,10), M('#A9C0B2'), -4,3,0, S);
+  mesh(box(2.6,.5,1.1), M('#4C6A8A'), -1.3,.35,-2.4, S); mesh(box(2.6,.9,.3), M('#4C6A8A'), -1.3,.85,-2.9, S);
+  mesh(box(1.4,.04,1), M('#E76F51'), 2.3,1.6,-3.3, S);  // poster
+  mesh(box(1.2,.9,.05), M('#F5B544'), 2.3,3.2,-3.32, S);
+  S.userData.cush=[0,1,2].map(i=>mesh(box(.6,.5,.2), M(['#F5B544','#E76F51','#F4E9D8'][i]), -2+i*.7,.9,-2.6, S));
+}
+// PETROL KIOSK at x=80
+{ const S=new THREE.Group(); S.position.x=80; sets.kiosk=S; scene.add(S);
+  const fl=mesh(new THREE.PlaneGeometry(20,20), M('#E9EDF0',{r:.6}), 0,0,0, S); fl.rotation.x=-Math.PI/2;
+  mesh(box(14,6,.3), M('#F4F4F4'), 0,3,-3.5, S); mesh(box(14,.5,.32), M('#367C68'), 0,4.2,-3.48, S);
+  mesh(box(2.4,1.1,.8), M('#E76F51'), .9,.55,-1.4, S); mesh(box(2.5,.08,.9), M('#F4F4F4',{r:.3}), .9,1.12,-1.4, S);
+  const cols=['#E76F51','#F5B544','#367C68','#263B55','#E8A0BF','#8EC5E8'];
+  for(let r=0;r<3;r++){ mesh(box(3,.06,.6), M('#BFC5CC'), -2.6,.6+r*.8,-3, S); for(let k=0;k<7;k++) mesh(box(.3,.45,.3), M(cols[(k+r)%6]), -3.8+k*.4,.86+r*.8,-3, S); }
+}
+// characters
+const amir=person({skin:'#E8B98A',shirt:'#7A8450',pants:'#3B4256',hair:'amir',collar:'#646D3F'});
+const kavi=person({skin:'#A8693F',shirt:'#F2D16B',pants:'#3B4256',hair:'kavi',hood:1,shoe:'#E76F51'});
+const kaviT=person({skin:'#A8693F',shirt:'#A8693F',pants:'#A8693F',hair:'kavi',towel:1,shoe:'#A8693F'});
+const din=person({skin:'#9C6239',shirt:'#FBFAF5',pants:'#2E3A33',hair:'din',apron:1,shoulderTowel:1,shoe:'#333'});
+const cashier=person({skin:'#D9A27A',shirt:'#367C68',pants:'#263B55',hair:'npc'});
+[amir,kavi,kaviT,din,cashier].forEach(p=>scene.add(p));
+// props
+const glass=new THREE.Group(); scene.add(glass);
+mesh(cyl(.13,.11,.42), M('#DDEFFF',{r:.05,op:.35}), 0,.21,0, glass);
+const tea=mesh(cyl(.12,.1,.36), M('#C7864A',{r:.3}), 0,.19,0, glass);
+const ice=[0,1,2].map(i=>mesh(box(.09,.09,.09), M('#FFFFFF',{r:.1,op:.85}), -.04+i*.04,.3+i*.03,(i-1)*.03, glass));
+glass.position.set(.25,1.08,.45);
+const phone=mesh(box(.12,.22,.02), M('#1E1A2B',{r:.3}), 0,0,0); scene.add(phone);
+const twisties=mesh(box(.22,.3,.08), M('#F28C28'), 0,-.68,.12); kavi.userData.armR.add(twisties);
+const web=new THREE.Group(); scene.add(web);
+{ const pts=[]; const C=new THREE.Vector3(0,0,0); for(let a=0;a<8;a++){ const an=a/8*Math.PI*2; pts.push(C, new THREE.Vector3(Math.cos(an)*.7,Math.sin(an)*.7,0)); }
+  for(let r=1;r<=4;r++) for(let a=0;a<8;a++){ const a0=a/8*Math.PI*2,a1=(a+1)/8*Math.PI*2,rr=r*.17; pts.push(new THREE.Vector3(Math.cos(a0)*rr,Math.sin(a0)*rr,0),new THREE.Vector3(Math.cos(a1)*rr,Math.sin(a1)*rr,0)); }
+  web.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({color:'#FFFFFF',transparent:true,opacity:.85}))); }
+const tray=new THREE.Group(); scene.add(tray);
+mesh(cyl(.5,.5,.03), M('#B8BEC4',{r:.3}), 0,0,0, tray);
+mesh(sph(.28,24), M('#F2E3C0'), -.15,.08,0, tray).scale.set(1,.45,1);              // nasi
+mesh(sph(.22,24), M('#C0602A'), -.15,.15,0, tray).scale.set(1,.3,1);               // kuah banjir
+mesh(cyl(.28,.28,.05), M('#E9C27A'), .2,.05,.15, tray); mesh(cyl(.28,.28,.05), M('#E0B566'), .2,.1,.15, tray); // roti ×2
+const milo=mesh(cyl(.09,.08,.38), M('#6B3E1F'), .25,.2,-.25, tray); mesh(sph(.12,16), M('#4A2A14',{r:.9}), .25,.42,-.25, tray).scale.set(1,.6,1); // milo dino
+
+/* ---------- OVERLAYS ---------- */
+const $=id=>document.getElementById(id);
+const ease=x=>1-Math.pow(1-Math.min(1,Math.max(0,x)),3);
+const show=(id,on,t0,t)=>{ const e=$(id); e.style.display=on?'block':'none'; if(on&&t0!=null){ const p=ease((t-t0)/.18); e.style.transform=(e.dataset.rot||'')+` scale(${.7+.3*p})`; e.style.opacity=p; } };
+const BUBS=[ // t0,t1,text,x,y,w,tail
+ [21.6,24.3,'Sorry bro, jem gila tadi!',300,330,380,'250px'],
+ [24.6,27.3,'Korang dah order? Aku tak lapar sangat.',280,330,420,'260px'],
+ [27.9,29.8,'Biasa kan, Kavi?',60,300,360,'250px'],
+ [30.1,33.0,'Eh bro… wallet aku tertinggal la.',280,330,420,'260px'],
+];
+const BANS=[[3.2,5.4,'otw dah bro 🔥'],[9.2,11.5,'dah dekat ni 🚗💨'],[15.2,17.5,'5 min sampai 🙏']];
+
+/* ---------- TIMELINE / RENDER ---------- */
+const lerp=(a,b,x)=>a+(b-a)*x;
+function camAt(px,py,pz,tx,ty,tz){ cam.position.set(px,py,pz); cam.lookAt(tx,ty,tz); }
+function render(t){
+  const sc = t<2.6?'hook': t<5.6?'m1': t<9?'r1': t<11.6?'m2': t<15?'r2': t<17.6?'m3': t<21?'k1': t<34.5?'m4':'end';
+  const mam = sc[0]==='m'||sc==='hook';
+  [amir,kavi,kaviT,din,cashier,glass,phone,web,tray].forEach(o=>o.visible=false); twisties.visible=sc==='k1';
+  const blink=(o)=>((t+o)%3.3)<.12;
+  // melt state: 1 = full ice, 0 = melted
+  const melt = sc==='hook'||sc==='m4' ? 0 : sc==='m1'?1 : sc==='m2'?.55 : .2;
+  if(mam){
+    amir.visible=glass.visible=true; amir.position.set(0,0,.95); amir.rotation.y=Math.PI;
+    amir.rotation.y=0; amir.position.set(0,0,.95); amir.rotation.y=Math.PI; // faces table (-z)
+    amir.rotation.y = Math.PI*1.0;
+    ice.forEach((c,i)=>{ c.visible=melt>.05; c.scale.setScalar(.4+.6*melt); });
+    tea.material.color.set(melt>.5?'#C7864A': melt>.1?'#D29A64':'#DDB487'); tea.scale.y=.75+.25*melt;
+  }
+  // camera + poses
+  if(sc==='hook'||(sc==='m4'&&t<21.6)){
+    const k = sc==='hook'? t/2.6 : (t-21)/0.6;
+    camAt(lerp(1.4,1.1,k), 2.1, lerp(-3.9,-3.3,k), -.1,1.45,.9);
+    pose(amir,{sit:1,lL:-1.5,lR:-1.5,eyes:'half',frown:1,brow:'sad',hx:.15,aLx:-1.1,aRx:-1.1,aRz:.3,aLz:-.3});
+    web.visible=true; web.position.set(-.55,1.95,.65); web.lookAt(cam.position);
+  }
+  if(sc==='m1'){ camAt(1.5,2.2,-4.2, 0,1.35,.9);
+    const up = t>3.6; phone.visible=true;
+    pose(amir,{sit:1,lL:-1.5,lR:-1.5,eyes:blink(0)?'':'n',open:t>3.4&&t<4?.8:0,aRx:up?-2.6:-1.1,aRz:up?.2:.2,aLx:-1.4});
+    const a=amir.userData.armL; phone.position.set(.32,1.42,.42); phone.rotation.set(-.4,Math.PI,0);
+  }
+  if(sc==='m2'){ camAt(1.9,2.3,-4.6,.4,1.35,1.2); phone.visible=true; phone.position.set(.32,1.42,.42); phone.rotation.set(-.4,Math.PI,0);
+    pose(amir,{sit:1,lL:-1.5,lR:-1.5,blink:blink(0),aLx:-1.4,aRx:-1.1,hx:.1});
+    din.visible=true; din.position.set(2.6,0,2.7); din.rotation.y=Math.PI+.5+Math.sin(t*3)*.05; pose(din,{eyes:'half',aRx:-1.2+Math.sin(t*6)*.3});
+  }
+  if(sc==='m3'){ const k=(t-15)/2.6; camAt(lerp(1.6,1.2,k),2.1,lerp(-3.8,-3.2,k),-.2,1.4,1); phone.visible=true; phone.position.set(.32,1.42,.42); phone.rotation.set(-.4,Math.PI,0);
+    pose(amir,{sit:1,lL:-1.5,lR:-1.5,eyes:'half',frown:1,brow:'sad',aLx:-1.6,aLz:.6,hz:.25,blink:blink(.4)});
+    din.visible=true; din.position.set(-.75,0,1.25); din.rotation.y=Math.PI*.75; pose(din,{eyes:'half',brow:'sad',aLx:-1.3,aLz:.4,hy:.4});
+  }
+  if(sc==='r1'){ const S=40, k=(t-5.6)/3.4; camAt(S+lerp(1.8,1.2,k),2.3,6.4, S,1.5,0);
+    kaviT.visible=phone.visible=true; kaviT.position.set(S,0,0); kaviT.rotation.y=-.3;
+    const d=Math.sin(t*7); pose(kaviT,{sway:d*.12,aRx:-2.7,aRz:.4,aLz:-1.2-d*.4,eyes:'n',open:.7,hz:d*.1,lL:d*.2,lR:-d*.2,blink:blink(1)});
+    kaviT.userData.hips.position.y += Math.abs(d)*.05;
+    phone.position.set(S+.25,2.75,.25); phone.rotation.set(.2,-.3,.2);
+    sets.room.userData.cush.forEach((c,i)=>{ c.position.set(-2+i*.7,.9,-2.6); c.rotation.set(0,0,0); });
+  }
+  if(sc==='r2'){ const S=40; camAt(S+1.2,2.6,5.4, S-1,1.1,-1.6);
+    kavi.visible=true; kavi.position.set(S-1.2,0,-1.4); kavi.rotation.y=Math.PI;
+    pose(kavi,{lean:-.9,aLx:-2+Math.sin(t*14)*.6,aRx:-2-Math.sin(t*14)*.6});
+    sets.room.userData.cush.forEach((c,i)=>{ const tt=t-(11.9+i*.7); if(tt<0){ c.position.set(-2+i*.7,.9,-2.6); c.rotation.set(0,0,0); return; }
+      const ph=tt%2.1; c.position.set(-2+i*.7+ph*(i-1)*1.4, .9+ph*4-ph*ph*4.2, -2.6+ph*1.2); if(c.position.y<.1) c.position.y=.1; c.rotation.set(ph*5,ph*3,0); });
+  }
+  if(sc==='k1'){ const S=80, k=(t-17.6)/3.4; camAt(S+lerp(4,3.5,k),2.3,4, S+.8,1.4,-1.3);
+    kavi.visible=cashier.visible=true;
+    kavi.position.set(S+1.9,0,-.3); kavi.rotation.y=-.75; cashier.position.set(S+.5,0,-2.3); cashier.rotation.y=.5;
+    const l=Math.sin(t*9); pose(kavi,{eyes:l>.6?'':'n',open:.5+.4*Math.abs(l),lean:.05*l,aRx:-1.2,aLx:-.3,aLz:-.8-.4*Math.abs(l)});
+    pose(cashier,{open:.4+.4*Math.abs(Math.sin(t*8+1)),eyes:'n',hz:.1*Math.sin(t*3)});
+  }
+  if(sc==='m4'&&t>=21.6){
+    web.visible = t<24.6; web.position.set(-.55,1.95,.65);
+    kavi.visible=true;
+    const walk=Math.min(1,(t-21.6)/1.2), sitd=t>24.4;
+    kavi.position.set(lerp(-3,-.95,walk),0,lerp(1.6,-.3,walk)); kavi.rotation.y=sitd? Math.PI*0.42 : Math.PI*.3;
+    const w=Math.sin(t*12)*(walk<1?1:0);
+    const kTalk = (t>21.6&&t<23.6)||(t>24.6&&t<26.8)||(t>30.1&&t<32.4);
+    pose(kavi, sitd?{sit:1,lL:-1.5,lR:-1.5,eyes:'n',open:kTalk?.4+.5*Math.abs(Math.sin(t*14)):0,aLz:t>29?-.2:-1.1,aRz:t>29?.2:1.1,aRx:t>30?-1.4:0, brow:t>30?'sad':'',blink:blink(2)}
+                    :{lL:w*.6,lR:-w*.6,aLx:-w*.5,aRx:w*.5,aRz:1.2,aLz:-.2,open:kTalk?.4+.5*Math.abs(Math.sin(t*14)):0});
+    // Amir
+    const face = t>33.2; const fk=ease((t-33.2)/.25);
+    pose(amir,{sit:1,lL:-1.5,lR:-1.5,eyes:t>27.8&&t<30?'wide':'half',frown:1,brow:t>30?'mad':'',hx:face? lerp(0,1.1,fk):0,lean:face? lerp(0,.6,fk):0,aLx:-1.1,aRx:-1.1,hy:t>21.6&&t<24.4?-.5:0});
+    // Din + tray
+    if(t>27.6){ din.visible=tray.visible=true; const dk=ease((t-27.6)/.35);
+      din.position.set(lerp(3,1.05,dk),0,lerp(-2,-.75,dk)); din.rotation.y=-.9; pose(din,{eyes:'half',aLx:-1.5,aRx:-1.5,open:t>27.9&&t<29.2?.5+.4*Math.abs(Math.sin(t*12)):0});
+      tray.position.set(lerp(1.4,-.25,dk),1.1+(1-dk)*.4,-.3); }
+    // camera
+    if(t<24.4) camAt(1.6,2.3,-4.4, -.5,1.35,.5);
+    else if(t<33.2) camAt(.3,2.9,-5.8, 0,1.3,.3);
+    else { const k=(t-33.2)/1.3; camAt(lerp(.3,.4,k),lerp(2.9,2.3,k),lerp(-5.8,-3.6,k), 0,1.3,.8); }
+    if(t>33.2&&t<33.5) cam.position.x += Math.sin(t*120)*.04;
+  }
+  if(sc!=='end') R.render(scene,cam);
+  // overlays
+  show('pov', t<2.6||sc==='m1'&&t<3.1, t<2.6?0:null, t);
+  const capTx = t<2.6?'1 jam 47 minit kemudian…': (t>=2.6&&t<3.1)?'8:00 PM': sc==='m4'&&t>=21&&t<21.6?'9:47 PM':'';
+  $('cap').textContent=capTx; show('cap', !!capTx, t<2.6?.15:null, t);
+  const clk = sc==='hook'||sc==='m4'?'9:47 PM': sc==='m1'?'8:00 PM': sc==='m2'?'8:40 PM': sc==='m3'?'9:15 PM':'';
+  $('clock').textContent=clk; show('clock', !!clk && sc!=='end');
+  const real = sc==='r1'?'baru siap mandi': sc==='r2'?'cari kunci kereta': sc==='k1'?'beli Twisties. Borak dengan cashier.':'';
+  $('realtx').textContent=real; $('real').dataset.rot='rotate(-3deg)'; show('real', !!real, sc==='r1'?5.6:sc==='r2'?11.6:17.6, t);
+  const bn=BANS.find(b=>t>=b[0]&&t<b[1]); if(bn) $('bantx').textContent=bn[2]; const be=$('ban'); be.style.display=bn?'flex':'none'; if(bn){ const p=ease((t-bn[0])/.25); be.style.transform=`translateY(${(1-p)*-220}px)`; }
+  const bb=BUBS.find(b=>t>=b[0]&&t<b[1]); const bu=$('bub'); if(bb){ bu.textContent=bb[2]; Object.assign(bu.style,{left:bb[3]+'px',top:bb[4]+'px',width:bb[5]+'px'}); bu.style.setProperty('--tx',bb[6]); } show('bub', !!bb, bb?bb[0]:null, t);
+  show('end', sc==='end', 34.5, t);
+}
+
+/* ---------- PLAYER ---------- */
+const wrap=$('wrap'), snd=$('snd');
+function fit(){ if(!document.body.classList.contains('render')) stage.style.transform=`scale(${wrap.clientWidth/720})`; }
+addEventListener('resize',fit);
+let T=0,playing=false,last=0;
+function sync(){ try{ snd.currentTime=T; playing?snd.play().catch(()=>{}):snd.pause(); }catch(e){} }
+function tick(now){ if(playing){ T=(!snd.paused&&snd.readyState>2)?snd.currentTime:T+(now-last)/1000; if(T>=DUR){T=DUR;playing=false;snd.pause();$('play').textContent='▶';} } last=now; render(T); $('seek').value=T; requestAnimationFrame(tick); }
+$('play').onclick=()=>{ if(T>=DUR)T=0; playing=!playing; $('play').textContent=playing?'❚❚':'▶'; sync(); };
+$('rew').onclick=()=>{ T=0; playing=true; $('play').textContent='❚❚'; sync(); };
+$('seek').oninput=e=>{ T=+e.target.value; sync(); };
+if(new URLSearchParams(location.search).has('render')){ document.body.classList.add('render'); window.renderAt=render; render(0); window.ready=true; }
+else { fit(); requestAnimationFrame(n=>{last=n;tick(n);}); }
+</script>
+</body>
+</html>
