@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>360 Camera</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--page:#F4E9D8;--fg:#1E1A2B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page:#14121B;--fg:#F4E9D8}}
+:root[data-theme="dark"]{--page:#14121B;--fg:#F4E9D8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--page);color:var(--fg);font-family:"Baloo 2",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:12px;padding:16px;min-height:100vh}
+#wrap{position:relative;width:min(100%,calc((100vh - 110px)*9/16));max-width:432px;aspect-ratio:9/16}
+#stage{position:absolute;left:0;top:0;width:720px;height:1280px;transform-origin:0 0;overflow:hidden;border-radius:8px;background:#000}
+body.render{padding:0;background:#000} body.render #wrap{width:720px;height:1280px;max-width:none} body.render #controls{display:none} body.render #stage{border-radius:0}
+svg text{font-family:"Baloo 2",system-ui,sans-serif;font-weight:800;paint-order:stroke fill;stroke-linejoin:round}
+#controls{display:flex;gap:10px;align-items:center;width:min(100%,432px)}
+#controls button{font:inherit;font-weight:800;min-width:56px;min-height:44px;border-radius:12px;border:3px solid var(--fg);background:transparent;color:var(--fg)}
+#controls input{flex:1;accent-color:#E76F51}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage"><svg id="v" viewBox="0 0 720 1280" width="720" height="1280"></svg></div></div>
+<audio id="snd" src="soundtrack.m4a" preload="auto"></audio>
+<div id="controls"><button id="play">▶</button><button id="rew">↺</button><input id="seek" type="range" min="0" step="0.01" value="0"></div>
+<script src="../../tools/rig2d.js"></script>
+<script src="scene.js"></script>
+</body>
+</html>
