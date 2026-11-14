@@ -1,0 +1,26 @@
+TITLE
+How Does Your Car Create a 360° View From Cameras That Aren't Even There?
+
+DESCRIPTION
+Your car can show you a view from directly above it — but there's no camera up there. So where does that bird's-eye view come from?
+In this episode of The Unnecessary Lab we break down surround-view camera systems: four wide-angle cameras, lens distortion correction, a flat-ground perspective trick called a homography, image stitching, calibration — and why the picture can stretch, double or hide things.
+
+Chapters
+0:00 Hook
+0:34 The cameras
+1:38 The magic trick
+2:46 The calibration problem
+3:27 What it can't do
+4:14 Putting it together
+
+Sources are listed in the pinned comment / sources.txt.
+Narration: synthetic voice (Microsoft Edge neural TTS). Music & sound: original, synthesised for this video. Visuals: original motion graphics.
+
+KEYWORDS
+360 camera car, surround view camera, bird's eye view camera, around view monitor, how 360 parking camera works, car camera explained, fisheye lens distortion, image stitching, homography, camera calibration, parking camera, car technology explained, the unnecessary lab
+
+HASHTAGS
+#360Camera #SurroundView #CarTech #ParkingCamera #Explained #HowItWorks #TheUnnecessaryLab
+
+POSTING NOTE
+Upload as standard video. Add subtitles.srt as English captions. Disclose synthetic narration (done in description).

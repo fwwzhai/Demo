@@ -1,0 +1,21 @@
+EP002 — How Does Your Car Create a 360° View? — research sources (fact-check list)
+
+1. Zhang, B. et al. (Texas Instruments), "A Surround View Camera Solution for Embedded Systems," CVPR Workshops 2014.
+   https://openaccess.thecvf.com/content_cvpr_workshops_2014/W17/papers/Zhang_A_Surround_View_2014_CVPR_paper.pdf
+   Used for: four fisheye cameras; pipeline = geometric alignment (fisheye distortion correction + perspective transform to a common bird's-eye view),
+   photometric alignment (evening out brightness/colour between cameras), composite view synthesis/blending in overlap regions; chart-based calibration.
+2. US Patent 10,911,745 B2, "Calibration of a surround view camera system" (Texas Instruments, filed 2016, granted 2021).
+   https://patents.google.com/patent/US10911745
+   Used for: calibration charts placed in the overlapping fields of view of adjacent cameras.
+3. US Patent 10,922,559, "Automatic surround view homography matrix adjustment, and system and method for calibration thereof."
+   https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/10922559
+   Used for: per-camera homography projecting images onto a common ground plane; seam handling.
+4. "Camera calibration for the surround-view system: a benchmark and dataset" (arXiv:2312.16499, 2023).
+   https://arxiv.org/pdf/2312.16499
+   Used for: four fisheye cameras with ~180° FOV; extrinsic calibration before homography-based synthesis.
+5. Vehicle owner's manuals for surround/around-view camera systems (general guidance repeated across manufacturers):
+   the displayed image is a composite; objects may appear distorted or at a different distance; areas near the vehicle may not be shown;
+   cameras affected by dirt, rain, strong light; do not rely on the display alone — check surroundings directly.
+
+Claims deliberately kept general: camera positions "usually/often"; FOV "around 180°" ("many"); layouts vary by manufacturer;
+calibration "typically" with patterned targets; recalibration "may" be needed. Artefact/blind-spot visuals are labelled illustrative.

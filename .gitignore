@@ -2,3 +2,7 @@ episode_001_qwerty/build/*.f32
 episode_001_qwerty/build/seg_*.mp4
 episode_001_qwerty/build/master_hq.mp4
 episode_001_qwerty/build/p-*.log*
+episode_002_360_camera/build/*.f32
+episode_002_360_camera/build/seg_*.mp4
+episode_002_360_camera/build/master_hq.mp4
+episode_002_360_camera/build/p-*.log*
