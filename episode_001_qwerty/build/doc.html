@@ -1,0 +1,268 @@
+<!doctype html><html><head><meta charset="utf-8"><title>QWERTY</title>
+<style>html,body{margin:0;background:#111;overflow:hidden}canvas{display:block}</style></head><body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="timeline.js"></script>
+<script>
+// The Unnecessary Lab — EP001 QWERTY. renderAt(t) draws frame at t seconds.
+const C=document.getElementById('c'),X=C.getContext('2d'),W=1920,H=1080;
+const P={ink:'#13151b',ink2:'#1c1f28',paper:'#efe6d4',paper2:'#e2d6bf',brass:'#d4a84b',red:'#d9534f',teal:'#4fa3a0',mute:'#7d8390',line:'#2a2e3a',sep:'#5a4a35'};
+const SERIF='Caladea, "Liberation Serif", serif',SANS='Inter, sans-serif',MONO='"JetBrains Mono", monospace';
+const cl=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),lerp=(a,b,t)=>a+(b-a)*t;
+const eo=t=>1-Math.pow(1-cl(t),3),eio=t=>{t=cl(t);return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2};
+const back=t=>{t=cl(t);const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2)};
+const seg=(t,a,b)=>cl((t-a)/(b-a));
+function rr(x,y,w,h,r){X.beginPath();X.roundRect(x,y,w,h,r);}
+function txt(s,x,y,o={}){X.save();X.globalAlpha*=o.a??1;X.font=`${o.w||600} ${o.s||48}px ${o.f||SANS}`;X.fillStyle=o.c||P.paper;X.textAlign=o.al||'left';X.textBaseline=o.bl||'alphabetic';
+ if(o.ls)X.letterSpacing=o.ls+'px';X.fillText(s,x,y);const m=X.measureText(s).width;X.restore();return m;}
+function typed(s,p){return s.slice(0,Math.floor(s.length*cl(p)));}
+// grain: precomputed noise tiles
+const G=[];for(let k=0;k<6;k++){const g=document.createElement('canvas');g.width=480;g.height=270;const gx=g.getContext('2d'),id=gx.createImageData(480,270);
+ for(let i=0;i<id.data.length;i+=4){const v=Math.random()*255;id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=14;}gx.putImageData(id,0,0);G.push(g);}
+function bg(paper){X.fillStyle=paper?P.paper:P.ink;X.fillRect(0,0,W,H);
+ const g=X.createRadialGradient(W/2,H/2,300,W/2,H/2,1150);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,paper?'rgba(90,70,40,.35)':'rgba(0,0,0,.55)');X.fillStyle=g;X.fillRect(0,0,W,H);
+ if(!paper){X.strokeStyle='rgba(255,255,255,.035)';X.lineWidth=1;for(let x=0;x<W;x+=80){X.beginPath();X.moveTo(x,0);X.lineTo(x,H);X.stroke();}for(let y=0;y<H;y+=80){X.beginPath();X.moveTo(0,y);X.lineTo(W,y);X.stroke();}}}
+function kicker(s,x,y,c){X.fillStyle=c||P.brass;X.fillRect(x,y-22,6,28);txt(s,x+20,y,{s:24,w:700,c:c||P.brass,ls:4});}
+function card(x,y,w,h,o={}){X.save();X.shadowColor='rgba(0,0,0,.35)';X.shadowBlur=30;X.shadowOffsetY=10;rr(x,y,w,h,o.r??14);X.fillStyle=o.fill||P.ink2;X.fill();X.restore();
+ if(o.stroke){rr(x,y,w,h,o.r??14);X.strokeStyle=o.stroke;X.lineWidth=2;X.stroke();}}
+function cite(s,t,y=1010){txt(s,W-60,y,{s:22,w:500,c:P.mute,al:'right',a:eo(t)});}
+// ---------- keyboard ----------
+const LAY={Q:['QWERTYUIOP','ASDFGHJKL;','ZXCVBNM,./'],D:["',.PYFGCRL",'AOEUIDHTNS',';QJKXBMWVZ'],C:['QWFPGJLUY;','ARSTDHNEIO','ZXCVBKM,./'],A:['ABCDEFGHIJ','KLMNOPQRST','UVWXYZ,.;/']};
+const OFF=[0,.28,.78];
+function kpos(lay,ch){const L=LAY[lay];for(let r=0;r<3;r++){const c=L[r].indexOf(ch);if(c>=0)return[r,c];}return null;}
+// opts: from,to,m(morph 0..1),hl{ch:color},press{ch:0..1},alpha,dim(0..1 for non-hl),jit
+function kb(cx,cy,u,o={}){const from=o.from||'Q',to=o.to||from,m=o.m??0;const gap=u*.12,k=u-gap;
+ const tw=10.78*u,th=4*u,x0=cx-tw/2,y0=cy-th/2;X.save();X.globalAlpha*=o.alpha??1;
+ card(x0-u*.35,y0-u*.35,tw+u*.7,th+u*.7,{fill:'#1a1d25',r:u*.3});
+ // empty slots
+ for(let r=0;r<3;r++)for(let c=0;c<10;c++){const x=x0+(OFF[r]+c)*u,y=y0+r*u;rr(x,y+u*.06,k,k,u*.14);X.fillStyle='#0e1015';X.fill();}
+ rr(x0+3*u,y0+3*u+u*.06,4.6*u,k,u*.14);X.fillStyle='#0e1015';X.fill();rr(x0+3*u,y0+3*u,4.6*u,k-u*.05,u*.14);X.fillStyle='#2b2f3b';X.fill();
+ const chars=new Set([...LAY[from].join(''),...LAY[to].join('')]);
+ for(const ch of chars){const a=kpos(from,ch),b=kpos(to,ch);let al=1,r,c;
+  if(a&&b){let mm=eio(m);if(o.jit){const j=Math.sin(ch.charCodeAt(0)*12.9)*.5;mm=eio(cl(m*1.4-(j+.5)*.4));}
+   r=lerp(a[0],b[0],mm);c=lerp(a[1],b[1],mm);var lift=Math.sin(Math.PI*mm)*(o.jit?.6:.25);}else if(a){[r,c]=a;al=1-cl(m*3);lift=0}else{[r,c]=b;al=cl(m*3-2);lift=0}
+  if(al<=0)continue;const off=lerp(OFF[Math.floor(r)]??OFF[2],OFF[Math.ceil(r)]??OFF[2],r%1);
+  const pr=(o.press&&o.press[ch])||0,x=x0+(off+c)*u,y=y0+r*u+pr*u*.06-lift*u*.5;
+  X.save();X.globalAlpha*=al*(o.hl&&!o.hl[ch]&&o.dim?1-o.dim*.7:1);
+  rr(x,y,k,k-u*.05,u*.14);const hc=o.hl&&o.hl[ch];X.fillStyle=hc?hc:'#2f3442';X.fill();
+  rr(x+u*.07,y+u*.05,k-u*.14,k-u*.25,u*.1);X.fillStyle=hc?'rgba(255,255,255,.18)':'#363b4a';X.fill();
+  if(pr>0){rr(x-4,y-4,k+8,k+3,u*.16);X.strokeStyle=`rgba(212,168,75,${pr})`;X.lineWidth=4;X.stroke();}
+  txt(ch,x+k/2,y+k*.5,{s:u*.38,w:600,c:hc?P.ink:P.paper,al:'center',bl:'middle',f:SANS});X.restore();}
+ X.restore();return{x0,y0,u};}
+// ---------- typewriter line art ----------
+function typewriter(cx,cy,s,rev=1,col=P.sep){X.save();X.translate(cx,cy);X.scale(s,s);X.strokeStyle=col;X.lineWidth=3/s*1.2;X.lineCap='round';X.lineJoin='round';
+ X.beginPath();X.rect(-330,-470,660,W);X.clip();X.beginPath();X.rect(-330,-470,660*rev,1000);X.clip();
+ // body
+ X.beginPath();X.moveTo(-300,140);X.lineTo(-240,-120);X.lineTo(240,-120);X.lineTo(300,140);X.closePath();X.fillStyle='rgba(60,45,30,.08)';X.fill();X.stroke();
+ // platen + carriage
+ X.beginPath();X.ellipse(0,-200,250,38,0,0,Math.PI*2);X.stroke();X.beginPath();X.rect(-280,-215,560,30);X.stroke();
+ X.beginPath();X.moveTo(-280,-200);X.lineTo(-320,-200);X.moveTo(280,-200);X.lineTo(330,-230);X.stroke();
+ // paper sheet
+ X.beginPath();X.moveTo(-120,-230);X.lineTo(-110,-420);X.lineTo(120,-420);X.lineTo(115,-230);X.stroke();
+ // typebasket arc
+ X.beginPath();X.arc(0,-60,170,Math.PI*1.05,Math.PI*1.95);X.stroke();
+ for(let i=0;i<14;i++){const a=Math.PI*(1.08+i*.06);X.beginPath();X.moveTo(Math.cos(a)*170,-60+Math.sin(a)*170);X.lineTo(Math.cos(a)*120,-60+Math.sin(a)*120);X.stroke();}
+ // keys 4 rows
+ for(let r=0;r<4;r++){const n=11-(r%2),w=440+r*40;for(let c=0;c<n;c++){const x=-w/2+c*w/(n-1),y=-10+r*36;X.beginPath();X.arc(x,y,13,0,Math.PI*2);X.stroke();}}
+ X.beginPath();X.moveTo(-150,165);X.lineTo(150,165);X.stroke();
+ X.restore();}
+// ---------- icons ----------
+function icon(kind,x,y,s,col=P.paper){X.save();X.translate(x,y);X.scale(s,s);X.strokeStyle=col;X.fillStyle=col;X.lineWidth=4/s*1.4;X.lineJoin='round';X.lineCap='round';
+ const R=(a,b,c,d,r=6)=>{rr(a,b,c,d,r);X.stroke();},minikb=(x0,y0,w)=>{for(let r=0;r<3;r++)for(let c=0;c<10-r;c++){X.fillRect(x0+c*w/10+r*w/30,y0+r*w/12,w/12,w/16);}};
+ if(kind==='typewriter'){R(-60,-10,120,50);X.beginPath();X.ellipse(0,-22,62,10,0,0,7);X.stroke();R(-28,-70,56,44,2);minikb(-48,2,96);}
+ if(kind==='teleprinter'){R(-55,-60,110,100);R(-40,-50,80,30,2);minikb(-44,0,88);X.beginPath();X.moveTo(-30,-60);X.lineTo(-30,-80);X.lineTo(30,-80);X.lineTo(30,-60);X.stroke();}
+ if(kind==='terminal'){R(-55,-75,110,80,10);R(-42,-63,84,56,4);R(-65,15,130,30,4);minikb(-55,20,110);}
+ if(kind==='pc'){R(-70,-80,140,90,6);X.beginPath();X.moveTo(0,10);X.lineTo(0,25);X.stroke();R(-70,32,140,32,4);minikb(-60,37,120);}
+ if(kind==='phone'){R(-34,-70,68,140,12);minikb(-26,20,52);}
+ if(kind==='screen'){R(-50,-35,100,65,6);X.beginPath();X.moveTo(-20,45);X.lineTo(20,45);X.moveTo(0,30);X.lineTo(0,45);X.stroke();}
+ if(kind==='plug'){X.beginPath();X.moveTo(-14,-50);X.lineTo(-14,-25);X.moveTo(14,-50);X.lineTo(14,-25);X.stroke();R(-30,-25,60,40,8);X.beginPath();X.moveTo(0,15);X.quadraticCurveTo(0,45,30,50);X.stroke();}
+ if(kind==='mail'){R(-50,-32,100,64,4);X.beginPath();X.moveTo(-50,-32);X.lineTo(0,8);X.lineTo(50,-32);X.stroke();}
+ if(kind==='person'){X.beginPath();X.arc(0,-28,20,0,7);X.stroke();X.beginPath();X.arc(0,40,40,Math.PI,0);X.stroke();}
+ if(kind==='building'){R(-40,-50,80,100,2);for(let i=0;i<3;i++)for(let j=0;j<4;j++)X.fillRect(-26+i*20,-38+j*22,10,12);}
+ if(kind==='school'){X.beginPath();X.moveTo(-55,-10);X.lineTo(0,-50);X.lineTo(55,-10);X.closePath();X.stroke();R(-45,-10,90,60,2);R(-12,15,24,35,2);}
+ if(kind==='mic'){R(-15,-50,30,60,15);X.beginPath();X.arc(0,0,28,0,Math.PI);X.moveTo(0,28);X.lineTo(0,45);X.stroke();}
+ X.restore();}
+function strike(x,y,w,p,col=P.red){if(p<=0)return;X.strokeStyle=col;X.lineWidth=7;X.lineCap='round';X.beginPath();X.moveTo(x-w/2,y+w/2);X.lineTo(x-w/2+w*eo(p),y+w/2-w*eo(p));X.stroke();}
+function arrow(x1,y1,x2,y2,p,col=P.brass){if(p<=0)return;const x=lerp(x1,x2,p),y=lerp(y1,y2,p);X.strokeStyle=col;X.lineWidth=5;X.beginPath();X.moveTo(x1,y1);X.lineTo(x,y);X.stroke();
+ const a=Math.atan2(y2-y1,x2-x1);X.fillStyle=col;X.beginPath();X.moveTo(x,y);X.lineTo(x-18*Math.cos(a-.4),y-18*Math.sin(a-.4));X.lineTo(x-18*Math.cos(a+.4),y-18*Math.sin(a+.4));X.fill();}
+function personCard(x,y,name,role,p){X.save();X.globalAlpha=eo(p);X.translate(0,(1-eo(p))*40);card(x,y,440,150,{fill:'#f7f0e2',stroke:'#c9b896'});
+ X.save();X.beginPath();X.arc(x+75,y+75,48,0,7);X.fillStyle='#d8c9a8';X.fill();X.clip();X.fillStyle='#8b7754';X.beginPath();X.arc(x+75,y+62,20,0,7);X.fill();X.beginPath();X.arc(x+75,y+125,38,0,7);X.fill();X.restore();
+ txt(name,x+145,y+68,{s:30,w:700,c:'#3b2f22',f:SERIF});txt(role,x+145,y+104,{s:21,w:500,c:'#7a6a52'});X.restore();}
+// ---------- scenes: f(t local, D, abs) ----------
+const S={
+hook(t,D){bg();const z=1+t/D*.06;X.save();X.translate(W/2,H/2+40);X.scale(z,z);X.transform(1,0,-.18,.62,0,0);
+ const pr={};'QWERTY'.split('').forEach((c,i)=>{const s=1.05+i*.42;pr[c]=Math.max(0,1-Math.abs(t-s)*3)});
+ const hl={};'QWERTY'.split('').forEach((c,i)=>{if(t>1.05+i*.42)hl[c]=P.brass});kb(80,0,128,{press:pr,hl});X.restore();
+ const p=seg(t,4,4.8);X.fillStyle=`rgba(19,21,27,${.75*p})`;X.fillRect(0,0,W,H);
+ txt('BILLIONS',W/2,H/2-10,{s:170,w:800,al:'center',a:p,f:SERIF,c:P.paper});txt('of people type on it every day',W/2,H/2+70,{s:44,w:500,al:'center',a:p,c:P.brass});
+ ['pc','terminal','phone'].forEach((k,i)=>{const q=seg(t,6.2+i*1.1,7+i*1.1);X.globalAlpha=q*p;icon(k,W/2-300+i*300,H/2+250,1,P.mute);X.globalAlpha=1;});},
+hook2(t,D){bg();txt('Designed in the',W/2,330,{s:46,w:500,al:'center',c:P.mute,a:eo(t)});
+ txt(typed('1870s',seg(t,.4,1.4)),W/2,500,{s:200,w:700,f:SERIF,al:'center',c:P.brass});
+ [['screen','no screen'],['plug','no electricity'],['mail','no email']].forEach(([k,l],i)=>{const s=D*(.36+i*.17),q=eo(seg(t,s,s+.5)),x=W/2-420+i*420;
+  X.globalAlpha=q;icon(k,x,720,1.3,P.paper);txt(l,x,850,{s:34,w:500,al:'center',c:P.paper});X.globalAlpha=1;strike(x,720,120,seg(t,s+.3,s+.6));});},
+title(t,D){bg();const k=seg(t,0,1);txt('THE UNNECESSARY LAB  ·  EPISODE 001',W/2,330,{s:26,w:700,c:P.brass,al:'center',ls:6,a:k});
+ txt('WHY DO WE STILL USE',W/2,450,{s:56,w:600,al:'center',c:P.paper,ls:8,a:seg(t,.3,1)});
+ const q='QWERTY',n=Math.floor(cl(seg(t,.8,2.6))*6),u=150,x0=W/2-3*u-25;
+ for(let i=0;i<6;i++){const p=eo(seg(t,.8+i*.3,1.1+i*.3));if(p<=0)continue;const x=x0+i*(u+10),y=560-(1-back(p))*60;
+  X.globalAlpha=p;rr(x,y,u,u,22);X.fillStyle='#2f3442';X.fill();rr(x+10,y+8,u-20,u-30,16);X.fillStyle='#3a4050';X.fill();txt(q[i],x+u/2,y+u/2-4,{s:84,w:700,al:'center',bl:'middle',f:SERIF});X.globalAlpha=1;}
+ txt('?',x0+6*(u+10)+20,700,{s:180,w:700,f:SERIF,c:P.brass,a:seg(t,2.8,3.2)});
+ X.fillStyle=P.brass;X.fillRect(W/2-lerp(0,300,eo(seg(t,2.6,3.6))),800,lerp(0,600,eo(seg(t,2.6,3.6))),3);},
+milwaukee(t,D){bg(1);kicker('MILWAUKEE, WISCONSIN · LATE 1860s',120,150,P.sep);
+ txt('A machine shop. Three tinkerers.',120,240,{s:64,w:700,f:SERIF,c:'#3b2f22',a:eo(seg(t,.3,1.2))});
+ typewriter(1450,640,.75,eo(seg(t,.5,D*.8)));
+ personCard(120,340,'Christopher Latham Sholes','Newspaper editor & politician',seg(t,D*.28,D*.28+.6));
+ personCard(120,520,'Carlos Glidden','Collaborator',seg(t,D*.72,D*.72+.6));personCard(120,700,'Samuel Soule','Collaborator',seg(t,D*.8,D*.8+.6));
+ txt('Portraits: generic silhouettes',120,1010,{s:20,c:'#9a8a70',w:500});},
+piano(t,D){bg(1);kicker('U.S. PATENT · 1868',120,150,P.sep);txt('Like a piano',120,240,{s:72,w:700,f:SERIF,c:'#3b2f22',a:eo(t)});
+ const top='3579NOPQRSTUVWXYZ',bot='2468.ABCDEFGHIJKLM',x0=W/2-17*44,y=520,rv=eo(seg(t,.3,2.5));X.save();X.beginPath();X.rect(0,0,W*rv,H);X.clip();
+ for(let i=0;i<18;i++){const x=x0+i*88,pr=Math.max(0,Math.sin(t*3-i*.6))*(t>3?1:0)*.0;rr(x,y+140,82,240,8);X.fillStyle='#fbf6ea';X.fill();X.strokeStyle='#5a4a35';X.lineWidth=3;X.stroke();txt(bot[i],x+41,y+340,{s:36,w:700,al:'center',c:'#3b2f22',f:SERIF});}
+ for(let i=0;i<17;i++){const x=x0+44+i*88;rr(x+6,y,70,170,8);X.fillStyle='#4a3c2b';X.fill();txt(top[i],x+41,y+130,{s:32,w:700,al:'center',c:'#efe6d4',f:SERIF});}
+ X.restore();const hp=seg(t,D*.6,D*.6+.8);X.globalAlpha=eo(hp);X.strokeStyle=P.red;X.lineWidth=4;X.beginPath();X.roundRect(x0+4*88+38,y+300,10*88-60,64,30);X.stroke();
+ txt('roughly alphabetical',x0+9*88,y+440,{s:34,w:600,c:P.red,al:'center'});X.globalAlpha=1;
+ txt('Simplified illustration of the 1868 patent arrangement',120,1010,{s:20,c:'#9a8a70',w:500});},
+evolve(t,D){bg();kicker('1868 → 1873',120,150);txt('Rebuilt again and again',120,240,{s:64,w:700,f:SERIF,a:eo(t)});
+ const m=seg(t,1,D-1.2);kb(W/2,600,110,{from:'A',to:'Q',m,jit:1});
+ const yr=Math.round(lerp(1868,1873,eio(m)));txt(String(yr),W-140,240,{s:90,w:700,f:SERIF,c:P.brass,al:'right'});
+ const q=eo(seg(t,D*.25,D*.25+.6));X.globalAlpha=q;card(W-560,880,440,110,{fill:P.ink2,stroke:P.line});txt('James Densmore',W-530,928,{s:32,w:700,f:SERIF});txt('Investor & backer',W-530,965,{s:22,w:500,c:P.mute});X.globalAlpha=1;},
+remington(t,D){bg(1);kicker('E. REMINGTON & SONS · ILION, NEW YORK',120,150,P.sep);txt('The Sholes & Glidden Type-Writer',120,240,{s:62,w:700,f:SERIF,c:'#3b2f22',a:eo(t)});
+ typewriter(560,660,.85,eo(seg(t,.3,D*.5)));
+ const items=[['1873','Design sold to Remington'],['1874','Goes on sale'],['CAPS','Upper case only']];
+ items.forEach(([a,b],i)=>{const s=D*(.12+i*.24),q=eo(seg(t,s,s+.6));X.globalAlpha=q;txt(a,1120,420+i*150,{s:64,w:700,f:SERIF,c:P.red});txt(b,1320,420+i*150,{s:36,w:500,c:'#3b2f22'});X.globalAlpha=1;});
+ const sp=seg(t,D*.75,D);txt(typed('THE QUICK BROWN FOX',sp),1120,900,{s:40,w:700,f:MONO,c:'#3b2f22'});},
+no2(t,D){bg();kicker('1878 · REMINGTON NO. 2',120,150);txt('The shift key arrives',120,240,{s:64,w:700,f:SERIF,a:eo(t)});
+ const yrs=[1868,1873,1874,1878],x0=260,x1=1660,ly=820;X.strokeStyle=P.line;X.lineWidth=4;X.beginPath();X.moveTo(x0,ly);X.lineTo(x1,ly);X.stroke();
+ X.strokeStyle=P.brass;X.beginPath();X.moveTo(x0,ly);X.lineTo(lerp(x0,x1,eo(seg(t,.2,D*.6))),ly);X.stroke();
+ yrs.forEach((y,i)=>{const x=lerp(x0,x1,i/3),q=seg(t,.2+i*D*.15,.5+i*D*.15);X.globalAlpha=q;X.beginPath();X.arc(x,ly,12,0,7);X.fillStyle=i==3?P.brass:P.paper;X.fill();
+  txt(String(y),x,ly+70,{s:40,w:700,f:SERIF,al:'center'});txt(['patent','sold','on sale','shift key'][i],x,ly+110,{s:24,w:500,al:'center',c:P.mute});X.globalAlpha=1;});
+ const q=eo(seg(t,D*.25,D*.25+.6)),sh=(Math.floor(t*1.2)%2)==1;X.globalAlpha=q;rr(560,380,360,130,18);X.fillStyle=sh?P.brass:'#2f3442';X.fill();txt('SHIFT',740,450,{s:50,w:700,al:'center',bl:'middle',c:sh?P.ink:P.paper});
+ txt(sh?'A':'a',1200,500,{s:200,w:700,f:SERIF,al:'center',c:P.paper});X.globalAlpha=1;},
+myth(t,D){bg();kicker('THE MYTH',120,150,P.red);txt('“QWERTY was designed',W/2,440,{s:84,w:700,f:SERIF,al:'center',a:eo(seg(t,.2,1))});
+ txt('to slow typists down.”',W/2,550,{s:84,w:700,f:SERIF,al:'center',a:eo(seg(t,.8,1.6))});
+ const s=seg(t,D*.72,D*.72+.25);if(s>0){X.save();X.translate(W/2,760);X.rotate(-.12);const sc=lerp(2.2,1,eo(s));X.scale(sc,sc);X.globalAlpha=s;X.strokeStyle=P.red;X.lineWidth=8;rr(-200,-70,400,140,12);X.stroke();txt('MYTH?',0,0,{s:100,w:800,al:'center',bl:'middle',c:P.red});X.restore();}},
+mech(t,D){bg();kicker('HOW A TYPEBAR WORKS',120,150);const cx=W/2,cy=860,R=420,N=21,top=[cx,330];
+ X.strokeStyle=P.line;X.lineWidth=3;X.beginPath();X.arc(cx,cy,R,Math.PI*1.1,Math.PI*1.9);X.stroke();
+ X.beginPath();X.ellipse(cx,top[1]-40,330,40,0,0,7);X.strokeStyle=P.mute;X.stroke();txt('platen (paper roller)',cx+360,top[1]-30,{s:24,c:P.mute,w:500});
+ const c1=D*.3,jam=D*.58,shake=t>jam+.45?Math.sin(t*60)*4*Math.max(0,1-(t-jam-.45)):0;
+ for(let i=0;i<N;i++){const a=Math.PI*(1.12+i*.76/(N-1)),px=cx+Math.cos(a)*R,py=cy+Math.sin(a)*R;let sw=0;
+  if(i==10)sw=Math.max(0,Math.sin(Math.PI*seg(t,c1,c1+.6)))+Math.max(0,Math.sin(Math.PI*seg(t,c1+1,c1+1.6)));
+  if(i==11||i==12)sw=i==11?eo(seg(t,jam,jam+.45)):eo(seg(t,jam+.05,jam+.5));const red=(i==11||i==12)&&t>jam+.4;
+  const tx=lerp(px+Math.cos(a)*-140,top[0]+(i-10.5)*6*(red?1:0)+shake,eo(sw)),ty=lerp(py+Math.sin(a)*-140,top[1]+(red?30:0),eo(sw));
+  X.strokeStyle=red?P.red:(sw>0?P.brass:P.paper);X.lineWidth=7;X.beginPath();X.moveTo(px,py);X.lineTo(tx,ty);X.stroke();X.beginPath();X.arc(px,py,8,0,7);X.fillStyle=P.mute;X.fill();}
+ txt('typebars',cx-R-40,cy-80,{s:26,c:P.mute,al:'right',w:500,a:seg(t,.5,1.2)});
+ if(t>jam+.45){X.save();X.translate(cx+200,top[1]+160);X.rotate(-.08);txt('JAM!',0,0,{s:110,w:800,c:P.red,a:seg(t,jam+.45,jam+.6)});X.restore();}
+ txt('Simplified diagram',60,1010,{s:20,c:P.mute,w:500});},
+er(t,D){bg();kicker('BUT LOOK CLOSELY',120,150);const g=kb(W/2,560,130,{hl:t>D*.15?{E:P.red,R:P.red}:{},dim:eo(seg(t,D*.15,D*.3))});
+ const q=eo(seg(t,D*.35,D*.5));if(q>0){const ex=g.x0+2.5*130+60,y=g.y0-40;X.strokeStyle=P.red;X.lineWidth=5;X.beginPath();X.moveTo(ex,y);X.quadraticCurveTo(ex+65,y-100*q,ex+130,y);X.stroke();}
+ txt('“ER” — one of the most common letter pairs in English',W/2,900,{s:42,w:600,al:'center',a:q,c:P.paper});
+ txt('…sitting side by side.',W/2,970,{s:34,w:500,al:'center',a:eo(seg(t,D*.7,D*.8)),c:P.brass});},
+slow(t,D){bg(1);kicker('COMMERCIAL SENSE',120,150,P.sep);const q=eo(seg(t,.3,1));
+ X.save();X.translate(W/2-380,560);X.rotate(-.03);card(-280,-330,560,640,{fill:'#f8f1e1',stroke:'#3b2f22'});txt('SPEED',0,-180,{s:120,w:800,f:SERIF,al:'center',c:'#3b2f22',a:q});
+ for(let i=0;i<5;i++){X.fillStyle='#3b2f22';X.globalAlpha=q;X.fillRect(-200,-100+i*40,lerp(0,400-i*60,eo(seg(t,.6+i*.1,1.2+i*.1))),12);}X.globalAlpha=1;
+ txt('What sells a',0,200,{s:40,w:600,al:'center',c:'#3b2f22'});txt('typewriter',0,250,{s:40,w:600,al:'center',c:'#3b2f22'});X.restore();
+ const s=D*.55,p=eo(seg(t,s,s+.6));X.save();X.translate(W/2+380,560);X.rotate(.03);X.globalAlpha=p;card(-280,-330,560,640,{fill:'#f8f1e1',stroke:'#3b2f22'});
+ txt('NOW',0,-200,{s:60,w:800,f:SERIF,al:'center',c:'#3b2f22'});txt('SLOWER!',0,-100,{s:100,w:800,f:SERIF,al:'center',c:'#3b2f22'});txt('said no advert, ever',0,60,{s:36,w:500,al:'center',c:'#7a6a52'});X.restore();
+ strike(W/2+380,480,400,seg(t,s+.8,s+1.2));txt('Illustrations, not historical adverts',120,1010,{s:20,c:'#9a8a70',w:500});},
+telegraph(t,D){bg();kicker('ANOTHER EXPLANATION',120,150);txt('The telegraph connection',120,240,{s:64,w:700,f:SERIF,a:eo(t)});
+ // morse tape
+ const ty=520;X.fillStyle='#e9dfc9';X.fillRect(0,ty-50,W,100);const code='-.-. --.- -.. . .-- ... - ..- -.-- .--. .- .--. . .-. ... ',sp=t*260;let x=-sp%3000;
+ X.fillStyle=P.ink;for(let rep=0;rep<3;rep++)for(const ch of code){if(ch=='.'){X.beginPath();X.arc(x+12,ty,11,0,7);X.fill();x+=44}else if(ch=='-'){rr(x,ty-11,62,22,11);X.fill();x+=86}else x+=60;}
+ // key
+ const dn=Math.sin(t*9)>.3?1:0;X.save();X.translate(360,800);X.fillStyle='#2f3442';rr(-160,40,320,40,8);X.fill();X.rotate(dn?.06:0);X.fillStyle=P.brass;X.fillRect(-140,0,280,16);X.beginPath();X.arc(130,-6,26,0,7);X.fill();X.restore();
+ txt('telegraph key',360,920,{s:24,c:P.mute,al:'center',w:500});
+ const q=eo(seg(t,D*.25,D*.25+.6));X.globalAlpha=q;card(760,660,1040,260,{fill:P.ink2,stroke:P.line});txt('Yasuoka & Yasuoka (2011)',800,730,{s:40,w:700,f:SERIF,c:P.brass});
+ txt('“On the Prehistory of QWERTY” · Kyoto University',800,780,{s:28,w:500,c:P.paper});txt('Argues early telegraph operators — transcribing Morse —',800,840,{s:26,w:500,c:P.mute});txt('influenced how the keys were arranged.',800,878,{s:26,w:500,c:P.mute});X.globalAlpha=1;},
+verdict(t,D){bg();kicker('THE MORE HONEST ANSWER',120,150);const B=[['Mechanical limits',P.teal],['User feedback',P.brass],['Small compromises',P.red]];
+ B.forEach(([s,c],i)=>{const st=D*(.18+i*.13),p=back(seg(t,st,st+.6));if(p<=0)return;const y=760-i*150-(1-p)*-200;X.globalAlpha=cl(p);rr(W/2-480,y,960,120,14);X.fillStyle=c;X.fill();txt(s,W/2,y+62,{s:48,w:700,al:'center',bl:'middle',c:P.ink});X.globalAlpha=1;});
+ const q=eo(seg(t,D*.62,D*.62+.6));txt('= QWERTY',W/2,970,{s:60,w:800,f:SERIF,al:'center',c:P.paper,a:q});
+ txt('Not the best possible layout. Just one that worked.',W/2,300,{s:44,w:600,al:'center',c:P.brass,a:eo(seg(t,D*.8,D*.8+.6))});},
+sales(t,D){bg();kicker('FIRST-MOVER ADVANTAGE',120,150);txt('Remington got there early',120,240,{s:64,w:700,f:SERIF,a:eo(t)});
+ for(let i=0;i<60;i++){const c=i%12,r=Math.floor(i/12),p=eo(seg(t,D*.45+i*.04,D*.45+i*.04+.3));if(p<=0)continue;X.globalAlpha=p;icon('typewriter',260+c*125,420+r*120,.62,i==0?P.brass:P.paper);X.globalAlpha=1;}
+ txt('Illustrative',60,1010,{s:20,c:P.mute,w:500});},
+contest(t,D){bg();kicker('CINCINNATI · 1888',120,150);txt('Typing becomes a profession',120,240,{s:64,w:700,f:SERIF,a:eo(t)});
+ const st=D*.38;const lanes=[['Frank McGurrin','Remington · touch typing',P.brass,1],['Louis Traub','Caligraph',P.mute,.72]];
+ lanes.forEach(([n,m,c,sp],i)=>{const y=470+i*220,q=eo(seg(t,st-.6,st));X.globalAlpha=q;txt(n,160,y,{s:44,w:700,f:SERIF});txt(m,160,y+40,{s:26,w:500,c:P.mute});
+  rr(700,y-40,1060,60,30);X.fillStyle='#232733';X.fill();const pr=cl(seg(t,st,D*.85)*sp);rr(700,y-40,Math.max(60,1060*pr),60,30);X.fillStyle=c;X.fill();X.globalAlpha=1;});
+ const w=seg(t,D*.86,D*.86+.4);txt('WINNER',1760,420,{s:34,w:800,c:P.brass,al:'right',a:w,ls:4});
+ txt('Schools teach the layout businesses buy',W/2,960,{s:36,w:500,al:'center',c:P.paper,a:eo(seg(t,.6,1.4))*(1-seg(t,st-.8,st-.3))});},
+trust(t,D){bg();kicker('1893',120,150);txt('Rivals become one company',120,240,{s:64,w:700,f:SERIF,a:eo(t)});
+ const L=['Remington','Caligraph','Yost','Densmore','Smith Premier'],m=eio(seg(t,D*.4,D*.65));
+ L.forEach((s,i)=>{const x0=W/2+(i-2)*340,x=lerp(x0,W/2,m),y=lerp(560,620,m);X.globalAlpha=(1-m*.9)*eo(seg(t,.3+i*.2,.8+i*.2));card(x-150,y-55,300,110,{fill:P.ink2,stroke:P.line});txt(s,x,y+10,{s:34,w:700,f:SERIF,al:'center'});X.globalAlpha=1;});
+ const q=back(seg(t,D*.62,D*.62+.6));if(q>0){X.save();X.translate(W/2,620);X.scale(q,q);card(-400,-90,800,180,{fill:P.brass});txt('Union Typewriter Company',0,-5,{s:54,w:700,f:SERIF,al:'center',c:P.ink});txt('QWERTY as the standard',0,50,{s:30,w:600,al:'center',c:P.ink});X.restore();}},
+network(t,D){bg();kicker('THE NETWORK EFFECT',120,150);const cx=W/2,cy=600,R=280,N=[['person','Typists'],['building','Employers'],['school','Schools']];
+ const pts=N.map((n,i)=>{const a=-Math.PI/2+i*Math.PI*2/3;return[cx+Math.cos(a)*R,cy+Math.sin(a)*R];});
+ N.forEach(([k,l],i)=>{const st=D*(.05+i*.22),q=eo(seg(t,st,st+.5));X.globalAlpha=q;X.beginPath();X.arc(pts[i][0],pts[i][1],95,0,7);X.fillStyle=P.ink2;X.fill();X.strokeStyle=P.brass;X.lineWidth=3;X.stroke();
+  icon(k,pts[i][0],pts[i][1]-8,.8,P.paper);txt(l,pts[i][0],pts[i][1]+140,{s:34,w:700,al:'center'});X.globalAlpha=1;
+  const j=(i+1)%3,ap=eo(seg(t,st+.6,st+1.4)),a1=Math.atan2(pts[j][1]-pts[i][1],pts[j][0]-pts[i][0]);
+  arrow(pts[i][0]+Math.cos(a1)*110,pts[i][1]+Math.sin(a1)*110,pts[j][0]-Math.cos(a1)*120,pts[j][1]-Math.sin(a1)*120,ap);});
+ const pc=seg(t,D*.7,D);if(pc>0){const a=t*2.2;X.beginPath();X.arc(cx+Math.cos(a)*R*.78,cy+Math.sin(a)*R*.78,14,0,7);X.fillStyle=P.brass;X.fill();}
+ txt('More users → more value → more users',W/2,1000,{s:38,w:600,al:'center',c:P.brass,a:eo(pc*3)});},
+computers(t,D){bg();kicker('EVERY NEW MACHINE INHERITED IT',120,150);const K=[['typewriter','Typewriter'],['teleprinter','Teleprinter'],['terminal','Terminal'],['pc','Personal computer'],['phone','Smartphone']];
+ K.forEach(([k,l],i)=>{const st=D*(.05+i*.12),q=eo(seg(t,st,st+.5)),x=260+i*350;X.globalAlpha=q;icon(k,x,560-(1-q)*40,1.5,P.paper);txt(l,x,720,{s:30,w:600,al:'center'});X.globalAlpha=1;if(i<4)arrow(x+110,560,x+240,560,eo(seg(t,st+.4,st+.8)),P.mute);});
+ const q=seg(t,D*.7,D*.7+.6);txt('Same keys. Same order.',W/2,900,{s:56,w:700,f:SERIF,al:'center',c:P.brass,a:q});},
+path(t,D){bg();kicker('PATH DEPENDENCE',120,150);const st=eo(seg(t,.4,D*.7));
+ const br=[[-260,.15],[-120,.32],[140,.5],[280,.68]];X.lineCap='round';
+ br.forEach(([dy,at])=>{const p=seg(st,at,at+.25);if(p<=0)return;X.strokeStyle='rgba(125,131,144,.5)';X.lineWidth=6;X.beginPath();const sx=200+1500*at;X.moveTo(sx,620);X.quadraticCurveTo(sx+150,620,sx+150+200*p,620+dy*p);X.stroke();});
+ X.strokeStyle=P.brass;X.lineWidth=14;X.beginPath();X.moveTo(200,620);X.lineTo(200+1520*st,620);X.stroke();txt('QWERTY',200+1520*st,580,{s:36,w:800,c:P.brass,al:'right',a:st});
+ X.beginPath();X.arc(200,620,16,0,7);X.fillStyle=P.paper;X.fill();txt('1870s',200,680,{s:28,w:600,al:'center',c:P.mute});
+ const q=eo(seg(t,D*.15,D*.15+.6));X.globalAlpha=q;card(120,780,800,170,{fill:P.ink2,stroke:P.line});txt('Paul A. David (1985)',160,845,{s:40,w:700,f:SERIF,c:P.brass});txt('“Clio and the Economics of QWERTY”',160,895,{s:28,w:500});X.globalAlpha=1;
+ txt('An early choice can lock in the future',W-120,260,{s:40,w:600,al:'right',c:P.paper,a:eo(seg(t,D*.6,D*.6+.6))});},
+dvorak(t,D){bg();kicker('1936 · AUGUST DVORAK & WILLIAM DEALEY',120,150);txt('The Dvorak Simplified Keyboard',120,240,{s:62,w:700,f:SERIF,a:eo(t)});
+ const m=seg(t,D*.3,D*.3+2.2),hv=seg(t,D*.6,D*.6+.6),hl={};if(hv>0){'AOEUI'.split('').forEach(c=>hl[c]=P.teal);'DHTNS'.split('').forEach(c=>hl[c]=P.brass);}
+ const g=kb(W/2,620,120,{from:'Q',to:'D',m,hl,dim:hv});
+ txt('vowels · left hand',W/2-330,900,{s:32,w:700,c:P.teal,al:'center',a:hv});txt('common consonants · right hand',W/2+330,900,{s:32,w:700,c:P.brass,al:'center',a:hv});
+ X.globalAlpha=hv*.8;X.strokeStyle=P.paper;X.lineWidth=2;X.setLineDash([8,8]);rr(g.x0-12+.28*120,g.y0+120-10,10*120+4,120,16);X.stroke();X.setLineDash([]);txt('home row',g.x0+.28*120-24,g.y0+180,{s:24,c:P.paper,al:'right',w:500});X.globalAlpha=1;},
+claims(t,D){bg();kicker('CHECKING THE CLAIMS',120,150);txt('“Dramatically faster”?',120,240,{s:64,w:700,f:SERIF,a:eo(t)});
+ const R=[['Early studies','Some of the most striking results involved Dvorak himself',P.mute],['1956 · US government study','Retraining experienced typists didn’t pay off',P.brass],['1990 · Liebowitz & Margolis','“The Fable of the Keys”: superiority claims overstated',P.red]];
+ R.forEach(([a,b,c],i)=>{const st=D*(.2+i*.22),q=eo(seg(t,st,st+.6));X.save();X.globalAlpha=q;X.translate((1-q)*80,0);const y=340+i*200;card(120,y,1680,160,{fill:P.ink2,stroke:P.line});X.fillStyle=c;X.fillRect(120,y,10,160);
+  txt(a,170,y+68,{s:40,w:700,f:SERIF,c});txt(b,170,y+118,{s:30,w:500});X.restore();});
+ txt('Sources: Strong (1956) GSA report; Liebowitz & Margolis, J. Law & Economics (1990)',W-60,1040,{s:20,c:P.mute,w:500,al:'right'});},
+today(t,D){bg();kicker('WHAT USERS REPORT TODAY',120,150);const rows=[['Comfort & finger travel','Often reported as better',.78,P.teal],['Typing speed','Evidence for big gains is limited',.25,P.brass]];
+ rows.forEach(([a,b,v,c],i)=>{const st=D*(.1+i*.3),q=eo(seg(t,st,st+.8)),y=420+i*260;X.globalAlpha=cl(q*2);txt(a,160,y,{s:48,w:700,f:SERIF});txt(b,160,y+44,{s:28,w:500,c:P.mute});
+  rr(160,y+80,1600,34,17);X.fillStyle='#232733';X.fill();rr(160,y+80,Math.max(34,1600*v*q),34,17);X.fillStyle=c;X.fill();X.globalAlpha=1;});
+ txt('Qualitative summary — not measured values',160,1010,{s:20,c:P.mute,w:500});
+ txt('For most people: a modest difference',W/2,980,{s:40,w:600,al:'center',c:P.paper,a:eo(seg(t,D*.72,D*.72+.6))});},
+colemak(t,D){bg();kicker('2006 · SHAI COLEMAN',120,150);txt('Colemak: the gentler compromise',120,240,{s:62,w:700,f:SERIF,a:eo(t)});
+ const m=seg(t,D*.25,D*.25+2),hv=seg(t,D*.3+2,D*.3+2.6),hl={};if(hv>0){'ERTYUIOPSDFGJKLN;'.split('').forEach(c=>hl[c]=P.teal);'ZXCV'.split('').forEach(c=>hl[c]=P.brass);}
+ kb(W/2,620,120,{from:'Q',to:'C',m,hl,dim:hv*.6});
+ txt('17 keys moved',W/2-330,900,{s:36,w:700,c:P.teal,al:'center',a:hv});txt('Z X C V shortcuts stay put',W/2+330,900,{s:36,w:700,c:P.brass,al:'center',a:hv});},
+tradeoff(t,D){bg();kicker('THE REAL TRADE-OFF',120,150);const tilt=.16*eio(seg(t,D*.45,D*.75)),cx=W/2,cy=430;
+ X.fillStyle=P.mute;X.beginPath();X.moveTo(cx,cy);X.lineTo(cx-60,900);X.lineTo(cx+60,900);X.fill();X.save();X.translate(cx,cy);X.rotate(tilt);X.fillStyle=P.paper;X.fillRect(-560,-8,1120,16);X.restore();
+ [[-1,'BENEFIT','some effort saved','later',P.teal,D*.15],[1,'COST','weeks of slow typing · mismatched keyboards · muscle memory','now',P.red,D*.3]].forEach(([sd,a,b,c,col,st])=>{
+  const px=cx+Math.cos(tilt)*560*sd,py=cy+Math.sin(tilt)*560*sd,q=eo(seg(t,st,st+.6));X.strokeStyle=P.mute;X.lineWidth=3;X.beginPath();X.moveTo(px,py);X.lineTo(px-150,py+180);X.moveTo(px,py);X.lineTo(px+150,py+180);X.stroke();
+  X.beginPath();X.ellipse(px,py+185,190,26,0,0,7);X.fillStyle=col;X.globalAlpha=.25+.75*q;X.fill();X.globalAlpha=q;txt(a,px,py+290,{s:48,w:800,al:'center',c:col,ls:4});
+  const words=b.split(' · ');words.forEach((w,i)=>txt(w,px,py+340+i*40,{s:28,w:500,al:'center'}));txt(c.toUpperCase(),px,py+150,{s:26,w:700,al:'center',c:P.paper,ls:6});X.globalAlpha=1;});},
+phones(t,D){bg();kicker('THE GROUND IS SHIFTING',120,150);const px=W/2-380,py=600;rr(px-210,py-380,420,800,50);X.fillStyle='#0c0d11';X.fill();X.strokeStyle=P.mute;X.lineWidth=4;X.stroke();
+ const ks=LAY.Q,u=36;for(let r=0;r<3;r++)for(let c=0;c<10-(r==2?3:r?1:0);c++){const x=px-185+c*u+(r?u*.5:0)+(r==2?u:0),y=py+120+r*50;rr(x,y,u-4,44,6);X.fillStyle='#2f3442';X.fill();txt(ks[r][c],x+u/2-2,y+24,{s:20,w:600,al:'center',bl:'middle'});}
+ const sw=seg(t,D*.15,D*.45),path=[[3,0],[2,1],[6,0],[5,1],[4,2]];if(sw>0){X.strokeStyle=P.brass;X.lineWidth=10;X.lineCap='round';X.globalAlpha=.85;X.beginPath();const n=sw*(path.length-1);
+  for(let i=0;i<=Math.floor(n)+1&&i<path.length;i++){const[c,r]=path[i],x=px-185+c*u+(r?u*.5:0)+(r==2?u:0)+u/2,y=py+142+r*50;let fx=x,fy=y;if(i>n){const[c0,r0]=path[i-1];const x0=px-185+c0*u+(r0?u*.5:0)+(r0==2?u:0)+u/2,y0=py+142+r0*50;fx=lerp(x0,x,n%1);fy=lerp(y0,y,n%1);}i?X.lineTo(fx,fy):X.moveTo(fx,fy);}X.stroke();X.globalAlpha=1;}
+ const bub=eo(seg(t,D*.1,D*.3));X.globalAlpha=bub;rr(px-170,py-300,340,90,20);X.fillStyle=P.ink2;X.fill();txt(typed('Typing on gl',seg(t,D*.1,D*.3))+(t>D*.35?'ass':''),px-140,py-243,{s:32,w:500});X.globalAlpha=1;
+ const items=[['Autocorrect',D*.25],['Swipe typing',D*.4],['Voice input',D*.55]];items.forEach(([s,st],i)=>{const q=eo(seg(t,st,st+.5));txt(s,1100,420+i*150,{s:56,w:700,f:SERIF,a:q,c:i==1?P.brass:P.paper});});
+ const mq=seg(t,D*.55,D);if(mq>0){X.globalAlpha=eo(mq*3);icon('mic',1640,720,1,P.brass);X.strokeStyle=P.brass;X.lineWidth=3;for(let k=0;k<3;k++){const ph=(t*1.2+k/3)%1;X.globalAlpha=1-ph;X.beginPath();X.arc(1640,705,40+ph*80,0,7);X.stroke();}X.globalAlpha=1;}},
+future(t,D){bg();kicker('WILL WE EVER MOVE ON?',120,150);const f=seg(t,D*.35,D);kb(W/2,600,120,{alpha:1-f*.8});
+ for(let i=0;i<26;i++){const ch=String.fromCharCode(65+i),r=Math.sin(i*91.3),q=seg(t,D*.35+i*.12,D*.35+i*.12+3);if(q<=0)continue;txt(ch,W/2+r*600,600-q*500,{s:50,w:700,f:SERIF,a:(1-q)*.8,c:P.brass,al:'center'});}
+ txt('Not replaced.',W/2,250,{s:60,w:700,f:SERIF,al:'center',a:eo(seg(t,D*.2,D*.2+.6))});txt('Slowly, less needed.',W/2,960,{s:56,w:700,f:SERIF,al:'center',c:P.brass,a:eo(seg(t,D*.6,D*.6+.6))});},
+end(t,D){bg();const a=1-seg(t,D*.42,D*.48);X.globalAlpha=a;txt('Not perfect.',W/2,420,{s:96,w:700,f:SERIF,al:'center',a:eo(seg(t,.2,.9))});txt('Good enough —',W/2,560,{s:96,w:700,f:SERIF,al:'center',a:eo(seg(t,1.4,2.1)),c:P.brass});
+ txt('and everyone already knew it.',W/2,680,{s:56,w:500,al:'center',a:eo(seg(t,2.6,3.3))});X.globalAlpha=1;
+ const b=seg(t,D*.48,D*.48+.8);if(b>0){X.globalAlpha=eo(b);txt('What else in your life',W/2,400,{s:80,w:700,f:SERIF,al:'center'});txt('works exactly the same way?',W/2,500,{s:80,w:700,f:SERIF,al:'center',c:P.brass});
+  rr(W/2-260,590,520,90,45);X.strokeStyle=P.paper;X.lineWidth=3;X.stroke();txt('Tell us in the comments',W/2,648,{s:34,w:600,al:'center'});X.globalAlpha=1;}
+ const c=seg(t,D*.78,D*.78+1);if(c>0){X.globalAlpha=eo(c);X.fillStyle=P.brass;X.fillRect(W/2-40,800,80,4);txt('THE UNNECESSARY LAB',W/2,880,{s:44,w:800,al:'center',ls:10});X.globalAlpha=1;}},
+};
+// chapter cards overlay
+function chapter(t){for(const ch of TL.chapters){const lt=t-ch.s;if(lt<0||lt>2.2)continue;const p=eo(seg(lt,0,.45))*(1-seg(lt,1.7,2.2));
+ X.save();X.globalAlpha=p;X.fillStyle=P.ink;X.fillRect(0,H-150,W*p,150);X.fillStyle=P.brass;X.fillRect(0,H-150,12,150);
+ txt(ch.n,80,H-62,{s:56,w:800,f:SERIF,c:P.brass});txt(ch.t,190,H-62,{s:44,w:700,f:SERIF,c:P.paper});X.restore();}}
+function renderAt(t){X.setTransform(1,0,0,1,0,0);let cur=TL.shots[0];for(const s of TL.shots)if(t>=s.s)cur=s;const lt=t-cur.s;
+ // gentle push-in per shot
+ const z=1+.025*cl(lt/cur.d);X.save();X.translate(W/2,H/2);X.scale(z,z);X.translate(-W/2,-H/2);S[cur.k](lt,cur.d,t);X.restore();
+ chapter(t);X.drawImage(G[Math.floor(t*12)%6],0,0,W,H);
+ const fi=cl(lt/.35),fo=cl((cur.s+cur.d-t)/.35);const f=Math.min(fi,fo);if(f<1){X.fillStyle=`rgba(10,11,14,${1-f})`;X.fillRect(0,0,W,H);}
+ if(t<.6){X.fillStyle=`rgba(0,0,0,${1-t/.6})`;X.fillRect(0,0,W,H);}}
+function thumb(){X.setTransform(1,0,0,1,0,0);bg();X.save();X.translate(W/2+470,H/2+330);X.rotate(-.06);X.transform(1,0,-.15,.7,0,0);
+ const hl={Q:P.brass,W:P.brass,E:P.brass,R:P.brass,T:P.brass,Y:P.brass};kb(0,0,135,{hl});X.restore();
+ txt('WHY ARE WE',90,250,{s:120,w:800,f:SANS,c:P.paper});txt('STILL USING',90,380,{s:120,w:800,f:SANS,c:P.paper});
+ txt('QWERTY?',80,560,{s:210,w:800,f:SERIF,c:P.brass});
+ X.save();X.translate(1520,230);X.rotate(.12);X.strokeStyle=P.red;X.lineWidth=10;rr(-220,-75,440,150,14);X.stroke();txt('1873',0,8,{s:110,w:800,al:'center',bl:'middle',c:P.red,f:SERIF});X.restore();
+ X.drawImage(G[0],0,0,W,H);}
+window.thumb=thumb;
+window.renderAt=renderAt;
+if(!location.search.includes('render')){const a0=performance.now();const q=new URLSearchParams(location.search);const off=+(q.get('t')||0);(function loop(){renderAt(off+(performance.now()-a0)/1000);requestAnimationFrame(loop)})();}
+</script></body></html>

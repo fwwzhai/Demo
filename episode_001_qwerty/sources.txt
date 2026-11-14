@@ -1,0 +1,20 @@
+EP001 — Why Do We Still Use QWERTY? — research sources (fact-check list)
+
+1. Smithsonian Magazine, "Fact or Fiction? The Legend of the QWERTY Keyboard" (2013).
+   https://www.smithsonianmag.com/arts-culture/fact-of-fiction-the-legend-of-the-qwerty-keyboard-49863249/
+   Used for: Sholes/Milwaukee origin, Remington sale (1873) and launch (1874), jam story, Yasuoka telegraph theory, 1893 Union Typewriter Co.
+2. Yasuoka, Koichi & Yasuoka, Motoko (2011). "On the Prehistory of QWERTY." ZINBUN 42: 161–174, Kyoto University. http://hdl.handle.net/2433/139379
+   Used for: telegraph-operator hypothesis, key evolution 1868–1878, scepticism toward the "slow typists down" story.
+3. U.S. Patent 79,265 (1868), Sholes, Glidden & Soule, "Improvement in Type-Writing Machines" (piano-style, roughly alphabetical keyboard).
+   U.S. Patent 207,559 (1878), C. L. Sholes (keyboard close to modern QWERTY).
+4. Hagley Museum & Library (typewriter history; QWERTY as industry standard after 1893). https://hagley.org
+5. Frank E. McGurrin / 1888 Cincinnati typing contest vs Louis Traub (Caligraph): contemporary reports summarised in
+   https://en.wikipedia.org/wiki/Frank_Edward_McGurrin (secondary; details of the contest set-up are disputed — script keeps to "widely publicised contest").
+6. David, Paul A. (1985). "Clio and the Economics of QWERTY." American Economic Review 75(2): 332–337. (path dependence)
+7. Liebowitz, S. J. & Margolis, S. E. (1990). "The Fable of the Keys." Journal of Law & Economics 33(1): 1–25.
+   Used for: Dvorak's involvement in early studies; 1956 Strong / U.S. General Services Administration study; overstated superiority claims.
+8. Dvorak, A. & Dealey, W. L., U.S. Patent 2,040,248 (1936), "Typewriter Keyboard."
+9. Colemak official site (Shai Coleman, 2006; 17 keys changed vs QWERTY; Z/X/C/V kept). https://colemak.com
+
+Claims deliberately hedged in the script: jam-avoidance role ("may well have helped"), telegraph theory ("debated"), Dvorak benefits ("modest", "evidence thin").
+No numerical statistics are presented; bars in the "today" scene are labelled qualitative.
