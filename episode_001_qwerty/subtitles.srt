@@ -1,0 +1,567 @@
+1
+00:00:00,800 --> 00:00:02,741
+Look down at your keyboard.
+
+2
+00:00:02,791 --> 00:00:03,994
+Q, W, E, R, T, Y.
+
+3
+00:00:04,044 --> 00:00:08,860
+Billions of people type on this
+arrangement every day: on laptops,
+
+4
+00:00:08,910 --> 00:00:12,251
+on office desks, on the
+glass of their phones.
+
+5
+00:00:12,701 --> 00:00:16,741
+And yet it was designed in the
+1870s, for a machine with no screen,
+
+6
+00:00:16,791 --> 00:00:19,549
+no electricity, and no
+idea what an email was.
+
+7
+00:00:19,998 --> 00:00:23,361
+So why, after a century and a
+half of technological revolution,
+
+8
+00:00:23,411 --> 00:00:24,553
+are we still using it?
+
+9
+00:00:24,603 --> 00:00:26,936
+The real answer is
+stranger, and more human,
+
+10
+00:00:26,986 --> 00:00:28,941
+than the story you've probably heard.
+
+11
+00:00:30,791 --> 00:00:34,226
+Our story begins in Milwaukee,
+Wisconsin, in the late 1860s.
+
+12
+00:00:34,276 --> 00:00:38,816
+A newspaper editor and politician named
+Christopher Latham Sholes was tinkering
+
+13
+00:00:38,866 --> 00:00:43,114
+in a machine shop with two collaborators,
+Carlos Glidden and Samuel Soule.
+
+14
+00:00:43,564 --> 00:00:48,106
+Their early typewriter, patented in
+1868, looked surprisingly like a piano.
+
+15
+00:00:48,156 --> 00:00:52,638
+Two rows of keys, with the letters laid
+out in roughly alphabetical order.
+
+16
+00:00:53,088 --> 00:00:54,312
+It didn't stay that way.
+
+17
+00:00:54,362 --> 00:00:57,974
+Over the next five years, backed by
+an investor named James Densmore,
+
+18
+00:00:58,024 --> 00:01:01,637
+Sholes rebuilt the machine again and
+again, and the keys kept moving.
+
+19
+00:01:02,087 --> 00:01:04,165
+In 1873, the design was sold to E.
+
+20
+00:01:04,215 --> 00:01:08,671
+Remington and Sons, a company better
+known for guns and sewing machines.
+
+21
+00:01:08,721 --> 00:01:12,176
+The Sholes and Glidden
+Type-Writer went on sale in 1874.
+
+22
+00:01:12,226 --> 00:01:14,053
+It typed only capital letters,
+
+23
+00:01:14,103 --> 00:01:18,622
+and its keyboard was already remarkably
+close to the one in front of you.
+
+24
+00:01:19,072 --> 00:01:20,989
+A few keys still shuffled around,
+
+25
+00:01:21,039 --> 00:01:24,148
+and in 1878 the Remington
+Number 2 added a shift key,
+
+26
+00:01:24,198 --> 00:01:27,248
+so one machine could type
+both upper and lower case.
+
+27
+00:01:27,298 --> 00:01:30,109
+QWERTY, more or less as
+we know it, had arrived.
+
+28
+00:01:31,359 --> 00:01:33,611
+Now, here's the story
+you've probably heard.
+
+29
+00:01:33,661 --> 00:01:36,436
+QWERTY was deliberately
+designed to slow typists down,
+
+30
+00:01:36,486 --> 00:01:37,900
+so the machine wouldn't jam.
+
+31
+00:01:38,351 --> 00:01:40,016
+There's a grain of truth in it.
+
+32
+00:01:40,066 --> 00:01:41,786
+Early typewriters used typebars:
+
+33
+00:01:41,836 --> 00:01:44,441
+metal arms arranged in a
+ring beneath the paper.
+
+34
+00:01:44,491 --> 00:01:46,930
+Press a key, and its arm
+swings up to strike.
+
+35
+00:01:46,980 --> 00:01:51,134
+Press two neighbouring keys too quickly,
+and the arms can collide and stick.
+
+36
+00:01:51,583 --> 00:01:54,700
+So separating some common letter
+pairs may well have helped.
+
+37
+00:01:54,750 --> 00:01:55,598
+But look closely.
+
+38
+00:01:55,648 --> 00:01:59,663
+E and R sit side by side, and E R is one
+of the most common pairs in English.
+
+39
+00:01:59,713 --> 00:02:03,252
+If the goal was maximum separation,
+QWERTY does a strange job of it.
+
+40
+00:02:03,703 --> 00:02:07,146
+And the idea of slowing typists
+down makes little commercial sense.
+
+41
+00:02:07,196 --> 00:02:08,606
+Remington was selling speed.
+
+42
+00:02:08,656 --> 00:02:11,839
+Nobody markets a machine by
+promising it will make you slower.
+
+43
+00:02:12,288 --> 00:02:14,908
+Some researchers point
+somewhere else entirely.
+
+44
+00:02:14,958 --> 00:02:15,817
+In a 2011 paper,
+
+45
+00:02:15,867 --> 00:02:20,304
+Koichi and Motoko Yasuoka of Kyoto
+University argued that the layout was shaped
+
+46
+00:02:20,354 --> 00:02:23,031
+by the typewriter's earliest
+professional users,
+
+47
+00:02:23,081 --> 00:02:25,530
+telegraph operators
+transcribing Morse code,
+
+48
+00:02:25,580 --> 00:02:27,972
+whose needs nudged keys
+into new positions.
+
+49
+00:02:28,423 --> 00:02:29,881
+That account is debated too.
+
+50
+00:02:29,931 --> 00:02:33,651
+The honest answer is that QWERTY
+wasn't the product of one grand plan.
+
+51
+00:02:33,701 --> 00:02:37,528
+It came from mechanical limits, feedback
+from users, and years of small,
+
+52
+00:02:37,578 --> 00:02:38,713
+practical compromises.
+
+53
+00:02:38,763 --> 00:02:41,567
+It was never designed to be
+the best possible layout.
+
+54
+00:02:41,617 --> 00:02:42,644
+It just had to work.
+
+55
+00:02:43,894 --> 00:02:46,320
+So how did a compromise
+become a global standard?
+
+56
+00:02:46,370 --> 00:02:47,685
+The first reason is simple.
+
+57
+00:02:47,735 --> 00:02:50,414
+Remington got there early,
+and sold a lot of machines.
+
+58
+00:02:50,864 --> 00:02:54,334
+As typewriters spread into offices,
+typing became a profession,
+
+59
+00:02:54,384 --> 00:02:57,574
+and schools taught the layout
+that businesses were buying.
+
+60
+00:02:57,624 --> 00:03:00,535
+In a widely publicised contest
+in Cincinnati in 1888,
+
+61
+00:03:00,585 --> 00:03:04,334
+a stenographer named Frank McGurrin,
+typing by touch on a Remington,
+
+62
+00:03:04,384 --> 00:03:06,513
+beat a rival using a different machine.
+
+63
+00:03:06,563 --> 00:03:07,965
+It was superb advertising.
+
+64
+00:03:08,415 --> 00:03:12,589
+Then, in 1893, several of the biggest
+manufacturers, including Remington,
+
+65
+00:03:12,639 --> 00:03:15,251
+combined to form the
+Union Typewriter Company,
+
+66
+00:03:15,301 --> 00:03:18,318
+and QWERTY became the standard
+across their machines.
+
+67
+00:03:18,768 --> 00:03:20,056
+From there, it fed itself.
+
+68
+00:03:20,106 --> 00:03:22,577
+Typists learned QWERTY
+because employers used it.
+
+69
+00:03:22,627 --> 00:03:25,047
+Employers bought QWERTY
+because typists knew it.
+
+70
+00:03:25,097 --> 00:03:27,466
+Schools taught it because
+everyone demanded it.
+
+71
+00:03:27,516 --> 00:03:31,016
+Economists call this a network effect:
+the more people use something,
+
+72
+00:03:31,066 --> 00:03:33,383
+the more valuable it
+becomes to everyone else.
+
+73
+00:03:33,833 --> 00:03:37,391
+When typewriters gave way to
+teleprinters, then computer terminals,
+
+74
+00:03:37,441 --> 00:03:39,545
+then personal computers and smartphones,
+
+75
+00:03:39,595 --> 00:03:42,076
+each new technology
+inherited the old keyboard.
+
+76
+00:03:42,126 --> 00:03:44,338
+Not because engineers proved it was ideal,
+
+77
+00:03:44,388 --> 00:03:47,838
+but because millions of fingers
+already knew where the keys were.
+
+78
+00:03:48,288 --> 00:03:48,731
+In 1985,
+
+79
+00:03:48,781 --> 00:03:53,471
+the economist Paul David made QWERTY his
+headline example of path dependence.
+
+80
+00:03:53,521 --> 00:03:58,212
+That is, how an early, almost accidental
+choice can lock in an entire future.
+
+81
+00:03:59,462 --> 00:04:01,259
+Which raises the obvious question.
+
+82
+00:04:01,309 --> 00:04:02,292
+Could we do better?
+
+83
+00:04:02,342 --> 00:04:02,726
+In 1936,
+
+84
+00:04:02,776 --> 00:04:06,910
+education professor August Dvorak and
+his colleague William Dealey patented a
+
+85
+00:04:06,960 --> 00:04:09,301
+layout built on studies
+of letter frequency.
+
+86
+00:04:09,351 --> 00:04:12,724
+It puts all five vowels under the
+left hand's resting position,
+
+87
+00:04:12,774 --> 00:04:15,713
+and many of the most common
+consonants under the right.
+
+88
+00:04:16,163 --> 00:04:19,778
+For decades, Dvorak's layout was
+promoted as dramatically faster.
+
+89
+00:04:19,828 --> 00:04:24,119
+But some of the most striking early
+evidence came from studies Dvorak himself
+
+90
+00:04:24,169 --> 00:04:25,021
+was involved in.
+
+91
+00:04:25,071 --> 00:04:29,306
+A 1956 study for the US government found
+that retraining experienced typists
+
+92
+00:04:29,356 --> 00:04:30,885
+didn't pay off, and in 1990,
+
+93
+00:04:30,935 --> 00:04:35,170
+economists Stan Liebowitz and Stephen
+Margolis argued the superiority claims
+
+94
+00:04:35,220 --> 00:04:36,298
+had been overstated.
+
+95
+00:04:36,748 --> 00:04:40,600
+Today, many Dvorak users report less
+finger movement and greater comfort.
+
+96
+00:04:40,650 --> 00:04:43,113
+But solid evidence for
+big speed gains is thin,
+
+97
+00:04:43,163 --> 00:04:46,106
+and for most people the
+difference appears to be modest.
+
+98
+00:04:46,556 --> 00:04:49,753
+Then there's Colemak, released
+in 2006 by Shai Coleman.
+
+99
+00:04:49,803 --> 00:04:51,289
+It's a gentler compromise.
+
+100
+00:04:51,339 --> 00:04:55,717
+It moves seventeen keys, keeps shortcuts
+like Z, X, C and V where they are,
+
+101
+00:04:55,767 --> 00:05:00,145
+and aims to reduce finger travel without
+forcing you to start from scratch.
+
+102
+00:05:00,595 --> 00:05:02,086
+And that's the real trade-off.
+
+103
+00:05:02,136 --> 00:05:04,294
+A better layout might
+save you some effort.
+
+104
+00:05:04,344 --> 00:05:07,067
+But switching means weeks of
+slow, frustrating typing,
+
+105
+00:05:07,117 --> 00:05:10,097
+keyboards that don't match at
+work or on a friend's laptop,
+
+106
+00:05:10,147 --> 00:05:12,973
+and muscle memory that fights
+you every step of the way.
+
+107
+00:05:13,023 --> 00:05:14,154
+The cost arrives today.
+
+108
+00:05:14,204 --> 00:05:15,951
+The benefit is small, and far away.
+
+109
+00:05:17,202 --> 00:05:19,439
+Meanwhile, the ground is already shifting.
+
+110
+00:05:19,489 --> 00:05:23,414
+On phones, autocorrect, swipe typing
+and voice input do much of the work.
+
+111
+00:05:23,464 --> 00:05:27,498
+The layout matters less when you're
+barely pressing individual keys at all.
+
+112
+00:05:27,948 --> 00:05:29,916
+So, will we ever move beyond QWERTY?
+
+113
+00:05:29,966 --> 00:05:31,542
+Probably not by replacing it.
+
+114
+00:05:31,592 --> 00:05:36,028
+More likely, we'll gradually type less,
+and QWERTY will fade the way it arrived:
+
+115
+00:05:36,078 --> 00:05:38,439
+slowly, and without
+anyone really deciding.
+
+116
+00:05:38,888 --> 00:05:42,540
+QWERTY survived not because it was
+perfect, but because it was good enough,
+
+117
+00:05:42,590 --> 00:05:44,366
+and because everyone already knew it.
+
+118
+00:05:44,416 --> 00:05:45,550
+Which leaves a question.
+
+119
+00:05:45,600 --> 00:05:48,018
+What else in your life
+works exactly the same way?
+
+120
+00:05:48,068 --> 00:05:49,202
+Tell us in the comments.
+
+121
+00:05:49,252 --> 00:05:50,880
+This has been The Unnecessary Lab.
+
+122
+00:05:50,930 --> 00:05:51,867
+Thanks for watching.

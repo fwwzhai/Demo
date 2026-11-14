@@ -5,7 +5,7 @@ def load(f):
     r=subprocess.run(['ffmpeg','-loglevel','error','-i',f,'-f','f32le','-ac','1','-ar',str(SR),'-'],capture_output=True);return np.frombuffer(r.stdout,np.float32).copy()
 vo=np.zeros(N)
 for v in TL['vo']:
-    a=load(f"vo_{v['i']:02d}.mp3");s=int(v['s']*SR);vo[s:s+len(a)]+=a[:N-s]
+    a=load(f"vf_{v['i']:02d}.wav");s=int(v['s']*SR);vo[s:s+len(a)]+=a[:N-s]
 # ---- music: slow pads + soft arpeggio, original synthesis
 rng=np.random.default_rng(3)
 def hz(m):return 440*2**((m-69)/12)

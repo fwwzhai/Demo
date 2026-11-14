@@ -7,11 +7,11 @@ In this episode of The Unnecessary Lab we trace QWERTY from Christopher Latham S
 
 Chapters
 0:00 Why QWERTY?
-0:35 The origin
-1:30 The myth
-2:40 How it conquered the world
-3:45 Could we do better?
-4:50 What happens next
+0:30 The origin
+1:31 The myth
+2:43 How it conquered the world
+3:59 Could we do better?
+5:17 What happens next
 
 Sources are listed in the pinned comment / sources.txt.
 Narration: synthetic voice (Microsoft Edge neural TTS). Music & sound: original, synthesised for this video. Visuals: original motion graphics.
@@ -23,4 +23,4 @@ HASHTAGS
 #QWERTY #KeyboardHistory #Typewriter #Dvorak #Colemak #TechHistory #Explained
 
 POSTING NOTE
-Upload as standard (not Short). Add subtitles.srt as English captions. Tick "Altered or synthetic content" = No (narration is TTS, not a realistic person); disclose AI voice in description (done). Update chapter timestamps if they differ from final timeline.json.
+Upload as standard (not Short). Add subtitles.srt as English captions. Tick "Altered or synthetic content" = No (narration is TTS, not a realistic person); disclose AI voice in description (done).
